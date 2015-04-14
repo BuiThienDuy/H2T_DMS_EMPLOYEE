@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://E:/[1]Capstone/Android-Bootstrap-master/AndroidBootstrap/AndroidBootstrap.iml" filepath="E:/[1]Capstone/Android-Bootstrap-master/AndroidBootstrap/AndroidBootstrap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/H2T_DMS_EMPLOYEE.iml" filepath="$PROJECT_DIR$/H2T_DMS_EMPLOYEE.iml" />
+      <module fileurl="file://E:/[2]Group2 - HK7/android-sliding-layer-lib-master/Library/Sliding_Panel.iml" filepath="E:/[2]Group2 - HK7/android-sliding-layer-lib-master/Library/Sliding_Panel.iml" />
+      <module fileurl="file://D:/adt-bundle-windows-x86_64-20140702/sdk/extras/google/google_play_services/libproject/google-play-services_lib/google-play-services_lib1.iml" filepath="D:/adt-bundle-windows-x86_64-20140702/sdk/extras/google/google_play_services/libproject/google-play-services_lib/google-play-services_lib1.iml" />
+    </modules>
+  </component>
+</project>

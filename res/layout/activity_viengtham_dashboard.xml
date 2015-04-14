@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:layout_weight="1"
+        >
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="140dp"
+            >
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@drawable/image_dashboard_streetdivide"
+                android:text="@string/storeCaring"
+                android:layout_weight="1"
+                android:id="@+id/dashboard_btn_visit_store"
+                android:background="#FFFFFF"
+                style="?android:buttonBarButtonStyle"/>
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@drawable/image_viengtham_dashboard_invoice_management"
+                android:text="@string/trackInvoice"
+                android:layout_weight="1"
+                android:id="@+id/activity_viengtham_dashboard_btn_invoice_management"
+                android:background="#FFFFFF"
+                style="?android:buttonBarButtonStyle"/>
+    </LinearLayout>
+</LinearLayout>
