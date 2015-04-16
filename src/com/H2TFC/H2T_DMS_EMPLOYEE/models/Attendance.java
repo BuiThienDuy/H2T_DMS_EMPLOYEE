@@ -2,8 +2,6 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.models;
 
 import com.parse.*;
 
-import java.util.Set;
-
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
  * thanhduongpham4293@gmail.com
@@ -47,5 +45,13 @@ public class Attendance extends ParseObject {
 
     public static ParseQuery<Attendance> getQuery() {
         return ParseQuery.getQuery(Attendance.class);
+    }
+
+    public String getManagerId() {
+        return getString("manager_id");
+    }
+
+    public void setManagerId(String managerId) {
+        put("manager_id",managerId);
     }
 }

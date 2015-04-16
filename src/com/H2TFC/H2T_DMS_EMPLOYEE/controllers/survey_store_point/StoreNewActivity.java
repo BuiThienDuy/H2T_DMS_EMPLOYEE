@@ -83,6 +83,7 @@ public class StoreNewActivity extends Activity {
                     store.setCompetitor(matHangDoiThuCanhTranh);
                     store.setStatus(Store.StoreStatus.KHAO_SAT.name());
                     store.setStoreType(spnLoaiCuaHang.getSelectedItem().toString());
+
                     final String uuid = UUID.randomUUID().toString();
                     store.setStoreImageId(uuid);
                     if (storeLocation != null) {

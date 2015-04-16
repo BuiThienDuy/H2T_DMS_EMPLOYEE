@@ -34,7 +34,6 @@ public class MyApplication extends Application {
         ParseObject.registerSubclass(Product.class);
         ParseObject.registerSubclass(Feedback.class);
         ParseObject.registerSubclass(Invoice.class);
-        ParseObject.registerSubclass(Invoice_Detail.class);
         ParseObject.registerSubclass(Promotion.class);
         ParseObject.registerSubclass(Attendance.class);
 

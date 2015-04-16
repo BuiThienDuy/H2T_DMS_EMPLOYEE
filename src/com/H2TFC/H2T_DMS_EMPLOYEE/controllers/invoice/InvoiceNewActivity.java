@@ -1,26 +1,26 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.InvoiceNewAdapter;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.TrungBayActivity;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseQueryAdapter;
-import com.parse.SaveCallback;
+import com.parse.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /*
@@ -31,6 +31,8 @@ import java.util.Locale;
  * All rights reserved
  */
 public class InvoiceNewActivity extends Activity {
+    String storeId;
+
     InvoiceNewAdapter productListAdapter;
 
     ListView lvProduct;
@@ -45,6 +47,10 @@ public class InvoiceNewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoice_new);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
+            storeId = getIntent().getStringExtra("EXTRAS_STORE_ID");
+        }
 
         if (ConnectUtils.hasConnectToInternet(InvoiceNewActivity.this)) {
             DownloadUtils.DownloadParseProduct(new SaveCallback() {
@@ -134,8 +140,8 @@ public class InvoiceNewActivity extends Activity {
         });
     }
 
-    public void generateResult() {
-        tvResult.setText(getString(R.string.haveOrdered));
+    public String generateResult() {
+        StringBuilder result = new StringBuilder(getString(R.string.haveOrdered));
         double totalResult = 0;
         int count = 0;
         for(int i = 0 ; i < productListAdapter.getCount() ; i++) {
@@ -149,11 +155,11 @@ public class InvoiceNewActivity extends Activity {
                     double price = product.getPrice();
                     double total = price * i_amount;
                     totalResult += total;
-                    tvResult.append(count + ". " +  product.getProductName() + "(" + i_amount + " " + product.getUnit
-                            ()+")" +
-                            ": \n=" +
-                            " " );
-                    tvResult.append(String.format(Locale
+                    result.append(count + ". " + product.getProductName() + "(" + i_amount + " " + product.getUnit
+                            () + ")" +
+                            "=" +
+                            " ");
+                    result.append(String.format(Locale
                                     .CHINESE,
                             "%1$,.0f",
                             price) + " " + getString(R.string.VND) + " x " + i_amount + " = " + String.format(Locale.CHINESE,"%1$,.0f",
@@ -166,8 +172,32 @@ public class InvoiceNewActivity extends Activity {
 
             }
         }
-        tvResult.append(getString(R.string.resultTotalPayEqual) + String.format(Locale.CHINESE,"%1$,.0f",
-                totalResult) + " " + getString(R.string.VND)  );
+        result.append("\n" + getString(R.string.resultTotalPayEqual) + String.format(Locale.CHINESE, "%1$,.0f",
+                totalResult) + " " + getString(R.string.VND));
+
+        return result.toString();
+    }
+
+    public List<Product> getProductPurchaseList() {
+        ArrayList<Product> list = new ArrayList<Product>();
+
+        for(int i = 0 ; i < productListAdapter.getCount() ; i++) {
+            View view = getViewByPosition(i,lvProduct);
+            EditText etAmount = (EditText) view.findViewById(R.id.list_product_et_amount);
+            String amount = etAmount.getText().toString();
+            try {
+                int i_amount = Integer.parseInt(amount);
+                if(i_amount > 0) {
+                    Product product = productListAdapter.getItem(i);
+                    list.add(product);
+                }
+            } catch(Exception ex) {
+
+            }
+        }
+
+
+        return list;
     }
 
     public View getViewByPosition(int pos, ListView listView) {
@@ -183,13 +213,70 @@ public class InvoiceNewActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_invoice_new,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 finish();
                 break;
             }
+
+            case R.id.action_bar_invoice_new_create: {
+                CreateANewInvoice();
+                break;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void CreateANewInvoice() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(InvoiceNewActivity.this);
+        dialog.setTitle(getString(R.string.createNewInvoice));
+
+        String message = generateResult() + "\n\n" + getString(R.string.confirmCreateNewInvoice);
+
+        dialog.setMessage(message);
+
+        dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final Invoice invoice = new Invoice();
+                invoice.setStoreId(storeId);
+                invoice.setEmployee(ParseUser.getCurrentUser());
+                invoice.setInvoiceStatus(Invoice.MOI_TAO);
+                invoice.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
+                invoice.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
+
+                ArrayList<Product> productPurchaseList = (ArrayList<Product>) getProductPurchaseList();
+                invoice.setProductPurchases(productPurchaseList);
+
+                invoice.saveEventually();
+
+                invoice.pinInBackground(DownloadUtils.PIN_INVOICE, new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Toast.makeText(InvoiceNewActivity.this,getString(R.string.createInvoiceSuccess),Toast
+                                    .LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 }

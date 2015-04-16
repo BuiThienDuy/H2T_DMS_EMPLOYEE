@@ -68,6 +68,8 @@ public class FeedBackDialog extends Dialog {
                     feedback.setTitle(title);
                     feedback.setDescription(content);
                     feedback.setStatus(Feedback.MOI_TAO);
+                    feedback.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
+                    feedback.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
 
                     final StoreDetailActivity activity = (StoreDetailActivity) context;
                     feedback.setStoreId(activity.storeID);

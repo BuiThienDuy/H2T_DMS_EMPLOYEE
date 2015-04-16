@@ -13,7 +13,9 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.FeedBackDialog;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceHistoryActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceManagementActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceNewActivity;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
@@ -65,6 +67,18 @@ public class StoreDetailActivity extends Activity {
         }
         if(getIntent().hasExtra("EXTRAS_STORE_IMAGE_ID")) {
             store_image_id = getIntent().getStringExtra("EXTRAS_STORE_IMAGE_ID");
+        }
+
+        if(ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
+            DownloadUtils.DownloadParseInvoice(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    ParseQuery<Invoice> invoiceParseQuery = Invoice.getQuery();
+                    invoiceParseQuery.whereNotEqualTo("status",Invoice.DA_THANH_TOAN);
+                    invoiceParseQuery.whereEqualTo("storeId", storeID);
+                    invoiceParseQuery.fromPin(DownloadUtils.PIN_INVOICE);
+                }
+            });
         }
 
         InitializeComponent();
@@ -242,6 +256,7 @@ public class StoreDetailActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StoreDetailActivity.this, InvoiceHistoryActivity.class);
+                intent.putExtra("EXTRAS_STORE_ID",storeID);
                 startActivity(intent);
             }
         });
@@ -250,6 +265,7 @@ public class StoreDetailActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StoreDetailActivity.this, InvoiceNewActivity.class);
+                intent.putExtra("EXTRAS_STORE_ID",storeID);
                 startActivity(intent);
             }
         });

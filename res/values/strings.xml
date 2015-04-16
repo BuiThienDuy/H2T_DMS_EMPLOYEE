@@ -51,8 +51,8 @@
     <string name="trackInvoice">Theo dõi đơn hàng</string>
     <string name="storeCaring">Chăm sóc cửa hàng</string>
     <string name="status">Tình trạng:</string>
-    <string name="invoiceCreateDate">Ngày đặt hàng:</string>
-    <string name="invoiceOwner">Người đặt hàng:</string>
+    <string name="invoiceCreateDate">Ngày đặt hàng</string>
+    <string name="invoiceOwner">Người đặt hàng</string>
     <string name="invoice">Đơn hàng</string>
     <string name="pleaseChooseYourAction">Vui lòng chọn công việc mà bạn muốn làm</string>
     <string name="survey">Khảo sát</string>
@@ -116,7 +116,7 @@
     <string name="pleaseSelectAtLeastOneStoreBelow">Vui lòng chọn 1 trong các cửa hàng bên dưới</string>
     <string name="errorThereAreNoStoreNear">Hiện không có cửa hàng nào trong khoảng 300m gần nơi bạn đang đứng
         . Vui lòng thử lại sau.</string>
-    <string name="visiting">" đang viếng thăm"</string>
+    <string name="visiting">"đang viếng thăm"</string>
     <string name="descriptionStoreOwner">"-Chủ cửa hàng: "</string>
     <string name="createNewInvoice">Tạo đơn hàng mới</string>
     <string name="customerFeedBack">Phản hồi</string>
@@ -142,4 +142,13 @@
     <string name="haveSentFeedbackToYou">" đã gửi 1 thông tin phản hồi đến cho bạn."</string>
     <string name="haveOrdered">Đã đặt hàng:\n</string>
     <string name="resultTotalPayEqual">"Tiền phải trả = "</string>
+    <string name="createInvoice">Lập hóa đơn</string>
+    <string name="confirmCreateNewInvoice">Bạn có chắc là bạn muốn lập hóa đơn này.</string>
+    <string name="createInvoiceSuccess">Tạo hóa đơn bàn hàng thành công</string>
+    <string name="pleaseWaitTitle">Vui lòng chờ...</string>
+    <string name="loadingPleaseWait">Đang tải dữ liệu, vui lòng chờ...</string>
+    <string name="of">của</string>
+    <string name="MOI_TAO">Mới tạo</string>
+    <string name="DANG_XU_LY">Đang xử lý</string>
+    <string name="DA_THANH_TOAN">Đã thanh toán</string>
 </resources>

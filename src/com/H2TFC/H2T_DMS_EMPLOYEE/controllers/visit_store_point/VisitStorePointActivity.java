@@ -114,7 +114,7 @@ public class VisitStorePointActivity extends Activity {
                         String displayName = store.getStoreType() + " " + store.getName();
                         if(store.getObjectId().equals(currentStoreId)) {
                             iconGenerator.setColor(Color.YELLOW);
-                            displayName += getString(R.string.visiting);
+                            displayName += " - " + getString(R.string.visiting);
                         }
                         Bitmap bitmap = iconGenerator.makeIcon(displayName);
                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));

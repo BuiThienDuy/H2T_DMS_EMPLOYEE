@@ -46,7 +46,9 @@ public class VisitStorePointDashboardActivity extends Activity {
         btnInvoiceManagement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigateIntent(InvoiceManagementActivity.class);
+                Intent intent = new Intent(VisitStorePointDashboardActivity.this, InvoiceManagementActivity.class);
+                intent.putExtra("EXTRAS_STORE_ID",employeeStoreId);
+                startActivity(intent);
             }
         });
 

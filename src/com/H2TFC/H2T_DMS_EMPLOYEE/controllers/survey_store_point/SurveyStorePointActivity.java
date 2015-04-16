@@ -170,8 +170,11 @@ public class SurveyStorePointActivity extends Activity {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
 
-        Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        if (location != null) {
+        GPSTracker gpsTracker = new GPSTracker(this);
+
+        if (gpsTracker.canGetLocation())
+        {
+            Location location = gpsTracker.getLocation();
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
@@ -180,7 +183,8 @@ public class SurveyStorePointActivity extends Activity {
                     .zoom(17)                                                                 // Sets the zoom
                     .build();                                                                 // Creates a CameraPosition from the builder
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
+        } else {
+            gpsTracker.showSettingsAlert();
         }
     }
 

@@ -19,18 +19,28 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * Created by c4sau on 11/04/2015.
+/*
+ * Copyright (C) 2015 H2TFC Team, LLC
+ * thanhduongpham4293@gmail.com
+ * nhatnang93@gmail.com
+ * buithienduy93@gmail.com
+ * All rights reserved
  */
 public class InvoiceHistoryActivity extends Activity {
     InvoiceAdapter invoiceAdapter;
     ListView lvInvoice;
     TextView tvEmptyInvoice;
 
+    String storeId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoice_history);
+
+        if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
+            storeId = getIntent().getStringExtra("EXTRAS_STORE_ID");
+        }
 
         InitializeComponent();
         SetUpListView();
@@ -42,7 +52,8 @@ public class InvoiceHistoryActivity extends Activity {
             public ParseQuery<Invoice> create() {
                 ParseQuery<Invoice> query = Invoice.getQuery();
                 query.orderByDescending("updatedAt");
-                query.fromPin(DownloadUtils.PIN_PRODUCT);
+                query.whereEqualTo("storeId", storeId);
+                query.fromPin(DownloadUtils.PIN_INVOICE);
                 return query;
             }
         };
