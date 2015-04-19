@@ -47,6 +47,7 @@ public class InvoiceNewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoice_new);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(getString(R.string.invoiceNewTitle));
 
         if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
             storeId = getIntent().getStringExtra("EXTRAS_STORE_ID");

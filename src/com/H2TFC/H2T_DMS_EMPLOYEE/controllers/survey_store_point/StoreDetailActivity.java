@@ -70,15 +70,7 @@ public class StoreDetailActivity extends Activity {
         }
 
         if(ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
-            DownloadUtils.DownloadParseInvoice(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    ParseQuery<Invoice> invoiceParseQuery = Invoice.getQuery();
-                    invoiceParseQuery.whereNotEqualTo("status",Invoice.DA_THANH_TOAN);
-                    invoiceParseQuery.whereEqualTo("storeId", storeID);
-                    invoiceParseQuery.fromPin(DownloadUtils.PIN_INVOICE);
-                }
-            });
+
         }
 
         InitializeComponent();

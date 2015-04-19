@@ -148,7 +148,11 @@
     <string name="pleaseWaitTitle">Vui lòng chờ...</string>
     <string name="loadingPleaseWait">Đang tải dữ liệu, vui lòng chờ...</string>
     <string name="of">của</string>
-    <string name="MOI_TAO">Mới tạo</string>
-    <string name="DANG_XU_LY">Đang xử lý</string>
-    <string name="DA_THANH_TOAN">Đã thanh toán</string>
+    <string name="MOI_TAO">mới tạo</string>
+    <string name="DANG_XU_LY">đang xử lý</string>
+    <string name="DA_THANH_TOAN">đã thanh toán</string>
+    <string name="invoiceManagementTitle">Quản lý thông tin đơn hàng</string>
+    <string name="visitStorePointTitle">Viếng thăm điểm bán hàng</string>
+    <string name="invoiceHistoryTitle">Xem lịch sử đơn hàng</string>
+    <string name="invoiceNewTitle">Thêm đơn hàng mới</string>
 </resources>

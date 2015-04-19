@@ -36,7 +36,7 @@ import java.util.List;
  * All rights reserved
  */
 public class LoginActivity extends Activity {
-    boolean isKhaoSat = false;
+    boolean isKhaoSat = false, hasImage = false;
     BootstrapButton btnLogin;
     BootstrapEditText etUsername, etPassword;
     String employeeStoreId;
@@ -73,7 +73,7 @@ public class LoginActivity extends Activity {
             }
         }
 
-        if (!isKhaoSat) {
+        if (!isKhaoSat && !hasImage) {
             try {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, MyApplication.REQUEST_TAKE_PHOTO);
@@ -183,8 +183,8 @@ public class LoginActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MyApplication.REQUEST_TAKE_PHOTO) {
             isKhaoSat = false;
-            try {
-                if (data.getExtras().get("data") == null) {
+            hasImage = true;
+                if (!data.hasExtra("data")) {
                     finish();
                 } else {
                     Bitmap bm = (Bitmap) data.getExtras().get("data");
@@ -240,12 +240,18 @@ public class LoginActivity extends Activity {
                                                     employeeStoreId = list.get(0).getObjectId();
                                                     attendance.pinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT", new SaveCallback() {
                                                         @Override
-                                                        public void done(ParseException e) {
-                                                            if (e == null && ParseUser.getCurrentUser() != null) {
-                                                                Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
-                                                                intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
-                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                                startActivity(intent);
+                                                        public void done(ParseException ex) {
+                                                            if (ex == null) {
+                                                                progressDialog.dismiss();
+                                                                if(ParseUser.getCurrentUser() != null) {
+                                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                                                    intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
+                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                                    startActivity(intent);
+                                                                }
+
+                                                            } else {
+                                                                progressDialog.dismiss();
                                                             }
                                                         }
                                                     });
@@ -260,6 +266,8 @@ public class LoginActivity extends Activity {
                                                         items_id[i] = list.get(i).getObjectId();
                                                     }
 
+                                                    progressDialog.dismiss();
+
                                                     AlertDialog.Builder builder = new AlertDialog.Builder
                                                             (LoginActivity.this);
                                                     builder.setTitle(getString(R.string.pleaseSelectAtLeastOneStoreBelow));
@@ -273,11 +281,17 @@ public class LoginActivity extends Activity {
                                                                     SaveCallback() {
                                                                         @Override
                                                                         public void done(ParseException e) {
-                                                                            if (e == null && ParseUser.getCurrentUser() != null) {
-                                                                                Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
-                                                                                intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
-                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                                                startActivity(intent);
+                                                                            if (e == null ) {
+                                                                                progressDialog.dismiss();
+                                                                                if(ParseUser.getCurrentUser() != null) {
+                                                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                                                                    intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
+                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                                                    startActivity(intent);
+                                                                                }
+
+                                                                            } else {
+                                                                                progressDialog.dismiss();
                                                                             }
                                                                         }
                                                                     });
@@ -290,13 +304,23 @@ public class LoginActivity extends Activity {
                                                 //
                                                 if (list.size() == 0) {
                                                     progressDialog.dismiss();
-                                                    AlertDialog.Builder dialog = new AlertDialog.Builder(LoginActivity.this);
+                                                    AlertDialog.Builder dialog = new AlertDialog.Builder
+                                                            (LoginActivity.this);
+
+
                                                     dialog.setTitle(getString(R.string.errorThereAreNoStoreNear));
                                                     dialog.setCancelable(false);
                                                     dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialog, int which) {
-                                                            finish();
+                                                            ParseObject.unpinAllInBackground(DownloadUtils
+                                                                    .PIN_ATTENDANCE + "_DRAFT", new DeleteCallback() {
+                                                                @Override
+                                                                public void done(ParseException e) {
+                                                                    finish();
+                                                                }
+                                                            });
+
                                                         }
                                                     });
                                                     dialog.show();
@@ -326,10 +350,7 @@ public class LoginActivity extends Activity {
                     }
 
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                finish();
-            }
+
         }
     }
 
