@@ -2,6 +2,7 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,15 +14,12 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.FeedBackDialog;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceHistoryActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceManagementActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceNewActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreType;
 import com.parse.*;
 
 import java.util.List;
@@ -54,6 +52,7 @@ public class StoreDetailActivity extends Activity {
     BootstrapEditText etCongNo;
     ImageView ivCongNo;
     LinearLayout layoutTitleCongNo,layoutEditCongNo,layoutButton;
+    private double[] congNoMax;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +60,8 @@ public class StoreDetailActivity extends Activity {
         setContentView(R.layout.activity_store_detail);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.updateSurveyPointTitle));
-
+        congNoMax = new double[1];
+        congNoMax[0] = 0;
         if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
             storeID = getIntent().getStringExtra("EXTRAS_STORE_ID");
         }
@@ -69,13 +69,32 @@ public class StoreDetailActivity extends Activity {
             store_image_id = getIntent().getStringExtra("EXTRAS_STORE_IMAGE_ID");
         }
 
-        if(ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
-
-        }
-
         InitializeComponent();
-        GetAndShowStoreDetail();
         SetupEvent();
+
+        if(ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
+            ParseQuery<StoreImage> storeImageParseQuery = StoreImage.getQuery();
+            storeImageParseQuery.whereEqualTo("employee_id", ParseUser.getCurrentUser().getObjectId());
+            storeImageParseQuery.findInBackground(new FindCallback<StoreImage>() {
+                @Override
+                public void done(List<StoreImage> list, ParseException e) {
+                    if (e == null) {
+                        ParseObject.unpinAllInBackground(DownloadUtils.PIN_STORE_IMAGE);
+                        ParseObject.pinAllInBackground(DownloadUtils.PIN_STORE_IMAGE, list);
+                    }
+                }
+            });
+
+            DownloadUtils.DownloadParseStoreType(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    GetAndShowStoreDetail();
+
+                }
+            });
+        }
+        GetAndShowStoreDetail();
+
 
         if(getIntent().hasExtra("EXTRAS_READ_ONLY")) {
             dummy.setFocusableInTouchMode(true);
@@ -99,6 +118,53 @@ public class StoreDetailActivity extends Activity {
             btnCapNhat.setVisibility(View.GONE);
             btnQuayVe.setVisibility(View.GONE);
         }
+    }
+
+    private void GetAndShowDebt(final Store store) {
+        final double[] congNoHienTai = new double[1];
+        congNoHienTai[0] = 0;
+
+        ParseQuery<Invoice> invoiceParseQuery = Invoice.getQuery();
+        invoiceParseQuery.whereEqualTo("storeId", storeID);
+        invoiceParseQuery.fromPin(DownloadUtils.PIN_INVOICE);
+        invoiceParseQuery.findInBackground(new FindCallback<Invoice>() {
+            @Override
+            public void done(List<Invoice> list, ParseException e) {
+                if (e == null) {
+                    for (Invoice invoice : list) {
+                        congNoHienTai[0] += invoice.getInvoicePrice();
+                    }
+
+                    if (congNoMax[0] == 0) {
+                        ParseQuery<StoreType> storeTypeParseQuery = StoreType.getQuery();
+                        storeTypeParseQuery.whereEqualTo("store_type_name", store.getStoreType());
+                        storeTypeParseQuery.fromPin(DownloadUtils.PIN_STORE_TYPE);
+                        storeTypeParseQuery.getFirstInBackground(new GetCallback<StoreType>() {
+                            @Override
+                            public void done(StoreType storeType, ParseException e) {
+                                if (e == null) {
+                                    congNoMax[0] = storeType.getDefaultDebt();
+
+                                    if (congNoHienTai[0] >= congNoMax[0]) {
+                                        ivCongNo.setBackgroundColor(Color.RED);
+                                    } else if (congNoHienTai[0] < congNoMax[0] && congNoHienTai[0] >= congNoMax[0] * 2 / 3) {
+                                        ivCongNo.setBackgroundColor(Color.YELLOW);
+                                    } else {
+                                        ivCongNo.setBackgroundColor(Color.GREEN);
+                                    }
+
+
+                                    etCongNo.setText(String.format(Locale.CHINESE, "%1$,.0f", congNoHienTai[0]) + "/" + String.format
+                                            (Locale.CHINESE, "%1$,.0f", congNoMax[0]) + " " + getString(R.string.VND));
+                                }
+                            }
+                        });
+                    }
+
+
+                }
+            }
+        });
     }
 
     private void GetAndShowStoreDetail() {
@@ -146,8 +212,9 @@ public class StoreDetailActivity extends Activity {
                             etTenChuCuaHang.setText(store.getStoreOwner());
                             etDiaChi.setText(store.getAddress());
                             etSDT.setText(store.getPhoneNumber());
-                            etDoanhThu.setText(String.format(Locale.CHINESE,"%1$,.0f", store.getIncome()));
+                            etDoanhThu.setText(String.format(Locale.CHINESE, "%1$,.0f", store.getIncome()));
                             etMatHangDoiThu.setText(store.getCompetitor());
+                            congNoMax[0] = store.getMaxDebt();
 
                             int itemPosition = -1;
                             for (int index = 0, count = storeTypeAdapter.getCount(); index < count; ++index)
@@ -159,6 +226,10 @@ public class StoreDetailActivity extends Activity {
                                 }
                             }
                             spnLoaiCuaHang.setSelection(itemPosition);
+
+                            if (getIntent().hasExtra("EXTRAS_VIENG_THAM")) {
+                                GetAndShowDebt(store);
+                            }
                         } catch(Exception ex) {
                             ex.printStackTrace();
                         }
@@ -297,6 +368,9 @@ public class StoreDetailActivity extends Activity {
         layoutEditCongNo = (LinearLayout) findViewById(R.id.activity_store_detail_layout_edit_cong_no);
         layoutTitleCongNo = (LinearLayout) findViewById(R.id.activity_store_detail_layout_title_cong_no);
 
+        ivCongNo = (ImageView) findViewById(R.id.activity_store_detail_iv_cong_no);
+        etCongNo = (BootstrapEditText) findViewById(R.id.activity_store_detail_et_cong_no);
+
     }
 
     @Override
@@ -397,5 +471,12 @@ public class StoreDetailActivity extends Activity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        GetAndShowStoreDetail();
     }
 }

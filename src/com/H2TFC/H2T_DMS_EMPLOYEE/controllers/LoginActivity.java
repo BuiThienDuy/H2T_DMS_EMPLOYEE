@@ -274,7 +274,7 @@ public class LoginActivity extends Activity {
                                                     builder.setItems(items, new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int item) {
                                                             // Do something with the selection
-                                                            String storeIdSelected = items[item].toString();
+                                                            String storeIdSelected = items_id[item].toString();
                                                             attendance.setStoreId(storeIdSelected);
                                                             employeeStoreId = storeIdSelected;
                                                             attendance.pinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT", new

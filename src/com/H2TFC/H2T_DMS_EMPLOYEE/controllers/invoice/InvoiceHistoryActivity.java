@@ -2,6 +2,7 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -48,7 +49,6 @@ public class InvoiceHistoryActivity extends Activity {
         if(ConnectUtils.hasConnectToInternet(InvoiceHistoryActivity.this)) {
             ParseQuery<Invoice> query = Invoice.getQuery();
             query.whereEqualTo("storeId",storeId);
-            query.fromPin(DownloadUtils.PIN_INVOICE);
             query.findInBackground(new FindCallback<Invoice>() {
                 @Override
                 public void done(List<Invoice> list, ParseException e) {
@@ -85,5 +85,16 @@ public class InvoiceHistoryActivity extends Activity {
 
         // Default setting
         tvEmptyInvoice.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

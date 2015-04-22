@@ -155,4 +155,12 @@
     <string name="visitStorePointTitle">Viếng thăm điểm bán hàng</string>
     <string name="invoiceHistoryTitle">Xem lịch sử đơn hàng</string>
     <string name="invoiceNewTitle">Thêm đơn hàng mới</string>
+    <string name="prmotionDialogTitle">Thông tin khuyến mãi</string>
+    <string name="promotionType1">Loại khuyến mãi: \'Tặng phẩm\'\n</string>
+    <string name="promotionBuyMsg">"- Mua "</string>
+    <string name="prmotionGiftMsg">tặng</string>
+    <string name="promotionType2">Loại khuyến mãi: \'Chiết khấu\'\n</string>
+    <string name="willBeDiscountedMsg">" sẽ được giảm giá "</string>
+    <string name="promotionS">Khuyến mãi:</string>
+    <string name="sGift">Tặng</string>
 </resources>

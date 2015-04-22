@@ -1,27 +1,36 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.style.BulletSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceNewActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Promotion;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
+import com.H2TFC.H2T_DMS_EMPLOYEE.widget.FlowLayout;
 import com.parse.*;
 
+import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by c4sau on 10/04/2015.
+/*
+ * Copyright (C) 2015 H2TFC Team, LLC
+ * thanhduongpham4293@gmail.com
+ * nhatnang93@gmail.com
+ * buithienduy93@gmail.com
+ * All rights reserved
  */
 public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
 
@@ -34,6 +43,73 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
     public View getItemView(final Product object, View v, ViewGroup parent) {
         if (v == null) {
             v = View.inflate(getContext(), R.layout.list_product, null);
+
+            // Link to promotion
+            final FlowLayout flPromotion = (FlowLayout) v.findViewById(R.id.list_product_fl_promotion);
+
+            ParseQuery<Product> queryProduct = Product.getQuery();
+            queryProduct.whereEqualTo("objectId",object.getObjectId());
+            queryProduct.fromPin(DownloadUtils.PIN_PRODUCT);
+
+
+            ParseQuery<Promotion> queryPromotion = Promotion.getQuery();
+            queryPromotion.whereMatchesQuery("promotion_product_gift", queryProduct);
+            queryPromotion.fromPin(DownloadUtils.PIN_PROMOTION);
+            final View finalV1 = v;
+            queryPromotion.findInBackground(new FindCallback<Promotion>() {
+                @Override
+                public void done(List<Promotion> list, ParseException e) {
+                    if (e == null) {
+                        for (final Promotion promotion : list) {
+                            Button button = new Button(finalV1.getContext());
+                            button.setText(promotion.getPromotionName());
+                            button.setTextColor(Color.parseColor("#292929"));
+                            button.setTextSize((12 / finalV1.getContext().getApplicationContext().getResources().getDisplayMetrics().scaledDensity));
+                            button.setBackgroundResource(R.drawable.buttonshape);
+                            button.setShadowLayer(Color.parseColor("#5E8AA8"), 0, 0, 5);
+                            FlowLayout.LayoutParams layout_button = new FlowLayout.LayoutParams(ViewGroup
+                                    .LayoutParams.WRAP_CONTENT,20);
+                            layout_button.setMargins(0,5,5,0);
+                            button.setLayoutParams(layout_button);
+
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    AlertDialog.Builder dialog = new AlertDialog.Builder(finalV1.getContext());
+                                    dialog.setTitle(finalV1.getContext().getString(R.string.prmotionDialogTitle));
+                                    if(promotion.getDiscount() <= 0) {
+                                        // Product gift
+                                        dialog.setMessage(finalV1.getContext().getString(R.string.promotionType1)
+                                                        + finalV1.getContext().getString(R.string.promotionBuyMsg) + promotion.getQuantityGift() + " " + promotion
+                                                .getProductGift().getProductName() + " " +
+                                                finalV1.getContext().getString(R.string.prmotionGiftMsg) + " " + promotion.getQuantityGifted() + " " +
+                                                promotion.getProductGifted().getProductName()+".");
+                                    } else {
+                                        // Discount
+                                        dialog.setMessage(finalV1.getContext().getString(R.string.promotionType2)
+                                                        + finalV1.getContext().getString(R.string.promotionBuyMsg) + promotion.getQuantityGift() + " " + promotion
+                                                .getProductGift().getProductName() + finalV1.getContext().getString(R.string.willBeDiscountedMsg) + promotion
+                                                .getDiscount() + "%.");
+                                    }
+
+                                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                                    dialog.show();
+                                }
+                            });
+
+                            flPromotion.addView(button);
+                        }
+                    }
+                }
+            });
+        } else {
+
         }
         super.getItemView(object, v, parent);
         TextView tvName = (TextView) v.findViewById(R.id.list_product_tv_name);
@@ -60,7 +136,6 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
         }
 
         final EditText etAmount = (EditText) v.findViewById(R.id.list_product_et_amount);
-        final View finalV = v;
         etAmount.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -69,12 +144,9 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.equals("")) {
+                if (s.equals("")) {
                     etAmount.setText("0");
                 }
-
-                InvoiceNewActivity invoiceNewActivity = (InvoiceNewActivity) finalV.getContext();
-                invoiceNewActivity.generateResult();
             }
 
             @Override
@@ -83,8 +155,9 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
             }
         });
 
+
+
         return v;
     }
-
 
 }

@@ -85,7 +85,6 @@ public class InvoiceManagementActivity extends Activity {
                         }
                     }
 
-                    Log.e("He he he", sToSearch);
                     final String finalSToSearch = sToSearch;
                     ParseQueryAdapter.QueryFactory<Invoice> factory = new ParseQueryAdapter.QueryFactory<Invoice>() {
                         @Override

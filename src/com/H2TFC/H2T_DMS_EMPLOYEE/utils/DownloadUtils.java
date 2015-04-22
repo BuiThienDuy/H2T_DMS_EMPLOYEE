@@ -22,7 +22,8 @@ public class DownloadUtils {
     public static final String PIN_INVOICE = "PIN_INVOICE_DOWNLOAD";
     public static final String PIN_ATTENDANCE = "PIN_ATTENDANCE_DOWNLOAD";
     public static final String PIN_FEEDBACK = "PIN_FEEDBACK_DOWNLOAD";
-
+    public static final String PIN_PROMOTION = "PIN_PROMOTION_DOWNLOAD";
+    public static final String PIN_PRODUCT_PURCHASE = "PIN_PRODUCT_PURCHASE_DOWNLOAD";
 
     public static void DownloadParseArea(final SaveCallback saveCallback) {
 
@@ -140,6 +141,33 @@ public class DownloadUtils {
                 if(e==null) {
                     ParseObject.unpinAllInBackground(PIN_FEEDBACK);
                     ParseObject.pinAllInBackground(PIN_FEEDBACK, list, saveCallback);
+                }
+            }
+        });
+    }
+
+    public static void DownloadParsePromotion(final SaveCallback saveCallback) {
+        ParseQuery<Promotion> query = Promotion.getQuery();
+        query.findInBackground(new FindCallback<Promotion>() {
+            @Override
+            public void done(List<Promotion> list, ParseException e) {
+                if(e==null) {
+                    ParseObject.unpinAllInBackground(PIN_PROMOTION);
+                    ParseObject.pinAllInBackground(PIN_PROMOTION, list, saveCallback);
+                }
+            }
+        });
+    }
+
+
+    public static void DownloadParseProductPurchase(final SaveCallback saveCallback) {
+        ParseQuery<ProductPurchase> query = ProductPurchase.getQuery();
+        query.findInBackground(new FindCallback<ProductPurchase>() {
+            @Override
+            public void done(List<ProductPurchase> list, ParseException e) {
+                if(e==null) {
+                    ParseObject.unpinAllInBackground(PIN_PRODUCT_PURCHASE);
+                    ParseObject.pinAllInBackground(PIN_PRODUCT_PURCHASE, list, saveCallback);
                 }
             }
         });

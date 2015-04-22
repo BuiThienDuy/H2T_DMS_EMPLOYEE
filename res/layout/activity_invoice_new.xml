@@ -113,14 +113,14 @@
                 android:text="@string/productEmpty"
                 android:gravity="center"
                 style="?android:textAppearanceLarge"/>
-        <TextView
-                android:id="@+id/activity_invoice_new_tv_result"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/totalCost"
-                style="?android:textAppearanceLarge"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_margin="10dp"/>
+        <!--<TextView-->
+                <!--android:id="@+id/activity_invoice_new_tv_result"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@string/totalCost"-->
+                <!--style="?android:textAppearanceLarge"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_alignParentStart="true"-->
+                <!--android:layout_margin="10dp"/>-->
     </RelativeLayout>

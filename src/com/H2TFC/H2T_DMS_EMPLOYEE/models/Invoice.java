@@ -75,11 +75,11 @@ public class Invoice extends ParseObject {
     }
 
     // 5. Product Purchase
-    public List<Product> getProductPurchases() {
+    public List<ProductPurchase> getProductPurchases() {
         return getList("productPurchase");
     }
 
-    public void setProductPurchases(List<Product> productList) {
+    public void setProductPurchases(List<ProductPurchase> productList) {
         put("productPurchase",productList);
     }
 

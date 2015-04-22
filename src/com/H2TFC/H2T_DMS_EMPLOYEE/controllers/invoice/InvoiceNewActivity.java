@@ -12,14 +12,13 @@ import android.view.View;
 import android.widget.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.InvoiceNewAdapter;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.parse.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,7 +36,6 @@ public class InvoiceNewActivity extends Activity {
 
     ListView lvProduct;
     TextView tvEmptyProduct;
-    public TextView tvResult;
 
     EditText editTextSearch;
 
@@ -58,6 +56,13 @@ public class InvoiceNewActivity extends Activity {
                 @Override
                 public void done(ParseException e) {
                     tvEmptyProduct.setVisibility(View.VISIBLE);
+                    productListAdapter.loadObjects();
+                }
+            });
+
+            DownloadUtils.DownloadParsePromotion(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
                     productListAdapter.loadObjects();
                 }
             });
@@ -84,7 +89,6 @@ public class InvoiceNewActivity extends Activity {
         lvProduct.setEmptyView(tvEmptyProduct);
         lvProduct.setAdapter(productListAdapter);
         editTextSearch = (EditText) findViewById(R.id.activity_invoice_new_search);
-        tvResult = (TextView) findViewById(R.id.activity_invoice_new_tv_result);
 
         lvProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -102,7 +106,7 @@ public class InvoiceNewActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(editTextSearch.getText().toString().length() != 0) {
+                if (editTextSearch.getText().toString().length() != 0) {
                     ParseQueryAdapter.QueryFactory<Product> factory = new ParseQueryAdapter.QueryFactory<Product>() {
                         @Override
                         public ParseQuery<Product> create() {
@@ -114,7 +118,7 @@ public class InvoiceNewActivity extends Activity {
                             return query;
                         }
                     };
-                    productListAdapter = new InvoiceNewAdapter(InvoiceNewActivity.this,factory);
+                    productListAdapter = new InvoiceNewAdapter(InvoiceNewActivity.this, factory);
                     lvProduct.setAdapter(productListAdapter);
                     productListAdapter.notifyDataSetChanged();
                 } else {
@@ -128,7 +132,7 @@ public class InvoiceNewActivity extends Activity {
                             return query;
                         }
                     };
-                    productListAdapter = new InvoiceNewAdapter(InvoiceNewActivity.this,factory);
+                    productListAdapter = new InvoiceNewAdapter(InvoiceNewActivity.this, factory);
                     lvProduct.setAdapter(productListAdapter);
                     productListAdapter.notifyDataSetChanged();
                 }
@@ -141,10 +145,14 @@ public class InvoiceNewActivity extends Activity {
         });
     }
 
+    double totalPrice = 0;
+
     public String generateResult() {
         StringBuilder result = new StringBuilder(getString(R.string.haveOrdered));
+        StringBuilder result_promotion = new StringBuilder(getString(R.string.promotionS));
         double totalResult = 0;
         int count = 0;
+        StringBuilder sGifted = new StringBuilder("");
         for(int i = 0 ; i < productListAdapter.getCount() ; i++) {
             View view = getViewByPosition(i,lvProduct);
             EditText etAmount = (EditText) view.findViewById(R.id.list_product_et_amount);
@@ -153,34 +161,96 @@ public class InvoiceNewActivity extends Activity {
                 int i_amount = Integer.parseInt(amount);
                 if(i_amount > 0) {
                     Product product = productListAdapter.getItem(i);
+
+                    // Product promotion
+                    ParseQuery<Product> queryProduct = Product.getQuery();
+                    queryProduct.whereEqualTo("objectId",product.getObjectId());
+                    queryProduct.fromPin(DownloadUtils.PIN_PRODUCT);
+
+                    ParseQuery<Promotion> queryPromotion = Promotion.getQuery();
+                    queryPromotion.whereMatchesQuery("promotion_product_gift", queryProduct);
+                    queryPromotion.fromPin(DownloadUtils.PIN_PROMOTION);
+                    List<Promotion> promotionList = queryPromotion.find();
+
+                    HashMap<Integer,String> listOfPromo = new HashMap<Integer, String>();
+                    // Promotion type 1 = <quantity_gift><quantity_gifted||product_gifted>
+                    // Promotion type 2 = <quantity_gift><discount>
+
+
+                    int discount = 0;
+                    for(Promotion promotion : promotionList) {
+                        int quantity_gift = promotion.getQuantityGift();
+                        int quantity_gifted = promotion.getQuantityGifted();
+                        int discount_gift = promotion.getDiscount();
+                        if(discount_gift == 0) {
+                            if(i_amount >= quantity_gift) {
+                                int m = i_amount/quantity_gift;
+                                quantity_gifted *= m;
+
+                                sGifted.append("-" + getString(R.string.sGift) + " " + quantity_gifted + " " + promotion
+                                        .getProductGifted().getUnit()
+                                        + " " + promotion.getProductGifted().getProductName() +".\n");
+                            }
+                        } else {
+                            if(i_amount > quantity_gift && discount < discount_gift) { // get the max discount
+                                discount = discount_gift;
+                            }
+                        }
+                    }
+
+                    // Product purchase
                     double price = product.getPrice();
                     double total = price * i_amount;
+                    double discount_price = (discount*10/100);
+                    total = total - discount_price;
                     totalResult += total;
                     result.append(count + ". " + product.getProductName() + "(" + i_amount + " " + product.getUnit
                             () + ")" +
                             "=" +
                             " ");
-                    result.append(String.format(Locale
-                                    .CHINESE,
-                            "%1$,.0f",
-                            price) + " " + getString(R.string.VND) + " x " + i_amount + " = " + String.format(Locale.CHINESE,"%1$,.0f",
-                            total) + " " +
-                            getString(R.string.VND) +
-                            "\n");
+
+                    if(discount_price > 0) {
+                        result.append(String.format(Locale
+                                        .CHINESE,
+                                "%1$,.0f",
+                                price) + " " + getString(R.string.VND) + " x " + i_amount + " - " +
+                                discount_price + " = " +
+                                String
+                                        .format(Locale.CHINESE, "%1$,.0f",
+                                                total) + " " +
+                                getString(R.string.VND) +
+                                "\n");
+                    } else {
+                        result.append(String.format(Locale
+                                        .CHINESE,
+                                "%1$,.0f",
+                                price) + " " + getString(R.string.VND) + " x " + i_amount  + " = " +
+                                String
+                                        .format(Locale.CHINESE, "%1$,.0f",
+                                                total) + " " +
+                                getString(R.string.VND) +
+                                "\n");
+                    }
+
+
+
                     count++;
                 }
             } catch(Exception ex) {
 
             }
         }
+        totalPrice = totalResult;
+        result.append("\n" + sGifted);
+
         result.append("\n" + getString(R.string.resultTotalPayEqual) + String.format(Locale.CHINESE, "%1$,.0f",
                 totalResult) + " " + getString(R.string.VND));
 
         return result.toString();
     }
 
-    public List<Product> getProductPurchaseList() {
-        ArrayList<Product> list = new ArrayList<Product>();
+    public List<ProductPurchase> getProductPurchaseList() {
+        final ArrayList<ProductPurchase> list = new ArrayList<ProductPurchase>();
 
         for(int i = 0 ; i < productListAdapter.getCount() ; i++) {
             View view = getViewByPosition(i,lvProduct);
@@ -190,14 +260,28 @@ public class InvoiceNewActivity extends Activity {
                 int i_amount = Integer.parseInt(amount);
                 if(i_amount > 0) {
                     Product product = productListAdapter.getItem(i);
-                    list.add(product);
+                    final ProductPurchase productPurchase = new ProductPurchase();
+                    productPurchase.setName(product.getProductName());
+                    productPurchase.setQuantity(i_amount);
+                    productPurchase.setPrice(product.getPrice());
+                    productPurchase.setProductRelate(product);
+                    productPurchase.setUnit(product.getUnit());
+
+                    productPurchase.saveEventually();
+                    productPurchase.pinInBackground(DownloadUtils.PIN_PRODUCT_PURCHASE, new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                list.add(productPurchase);
+                            }
+                        }
+                    });
+
                 }
             } catch(Exception ex) {
 
             }
         }
-
-
         return list;
     }
 
@@ -253,8 +337,10 @@ public class InvoiceNewActivity extends Activity {
                 invoice.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
                 invoice.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
 
-                ArrayList<Product> productPurchaseList = (ArrayList<Product>) getProductPurchaseList();
+                ArrayList<ProductPurchase> productPurchaseList = (ArrayList<ProductPurchase>) getProductPurchaseList();
                 invoice.setProductPurchases(productPurchaseList);
+
+                invoice.setInvoicePrice(totalPrice);
 
                 invoice.saveEventually();
 
@@ -262,8 +348,9 @@ public class InvoiceNewActivity extends Activity {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Toast.makeText(InvoiceNewActivity.this,getString(R.string.createInvoiceSuccess),Toast
+                            Toast.makeText(InvoiceNewActivity.this, getString(R.string.createInvoiceSuccess), Toast
                                     .LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 });
