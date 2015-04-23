@@ -104,6 +104,7 @@
         <activity android:name=".controllers.dialog.ViewImageFullScreen"/>
         <activity android:name=".controllers.visit_store_point.VisitStorePointActivity"/>
         <activity android:name=".controllers.invoice.InvoiceHistoryActivity"/>
+        <activity android:name=".controllers.view_report.ViewReportActivity"/>
 
         <!-- replace @drawable/push_icon with your push icon identifier -->
         <meta-data android:name="com.parse.push.notification_icon" android:resource="@drawable/ic_notification"/>

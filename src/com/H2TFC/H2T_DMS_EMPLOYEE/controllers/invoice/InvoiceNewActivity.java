@@ -17,10 +17,7 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.parse.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -168,17 +165,18 @@ public class InvoiceNewActivity extends Activity {
                     queryProduct.fromPin(DownloadUtils.PIN_PRODUCT);
 
                     ParseQuery<Promotion> queryPromotion = Promotion.getQuery();
+//                    queryPromotion.whereGreaterThan("promotion_apply_from", new Date());
+//                    queryPromotion.whereLessThan("promotion_apply_to", new Date());
                     queryPromotion.whereMatchesQuery("promotion_product_gift", queryProduct);
                     queryPromotion.fromPin(DownloadUtils.PIN_PROMOTION);
                     List<Promotion> promotionList = queryPromotion.find();
+                    Date currentDate = new Date();
 
-                    HashMap<Integer,String> listOfPromo = new HashMap<Integer, String>();
-                    // Promotion type 1 = <quantity_gift><quantity_gifted||product_gifted>
-                    // Promotion type 2 = <quantity_gift><discount>
-
-
-                    int discount = 0;
+                    double discount = 0.0;
                     for(Promotion promotion : promotionList) {
+                        if (currentDate.after(promotion.getPromotionApplyFrom()) && currentDate.before(promotion
+                                .getPromotionApplyTo())) {
+
                         int quantity_gift = promotion.getQuantityGift();
                         int quantity_gifted = promotion.getQuantityGifted();
                         int discount_gift = promotion.getDiscount();
@@ -196,12 +194,13 @@ public class InvoiceNewActivity extends Activity {
                                 discount = discount_gift;
                             }
                         }
+                        }
                     }
 
                     // Product purchase
                     double price = product.getPrice();
                     double total = price * i_amount;
-                    double discount_price = (discount*10/100);
+                    double discount_price =total * (discount/100);
                     total = total - discount_price;
                     totalResult += total;
                     result.append(count + ". " + product.getProductName() + "(" + i_amount + " " + product.getUnit
@@ -214,7 +213,10 @@ public class InvoiceNewActivity extends Activity {
                                         .CHINESE,
                                 "%1$,.0f",
                                 price) + " " + getString(R.string.VND) + " x " + i_amount + " - " +
-                                discount_price + " = " +
+                                String.format(Locale
+                                                .CHINESE,
+                                        "%1$,.0f",
+                                        discount_price) + " " + getString(R.string.VND) + " = " +
                                 String
                                         .format(Locale.CHINESE, "%1$,.0f",
                                                 total) + " " +
@@ -241,7 +243,9 @@ public class InvoiceNewActivity extends Activity {
             }
         }
         totalPrice = totalResult;
-        result.append("\n" + sGifted);
+        if(sGifted.toString().length() > 0) {
+            result.append("\n" + sGifted.toString());
+        }
 
         result.append("\n" + getString(R.string.resultTotalPayEqual) + String.format(Locale.CHINESE, "%1$,.0f",
                 totalResult) + " " + getString(R.string.VND));
@@ -260,12 +264,26 @@ public class InvoiceNewActivity extends Activity {
                 int i_amount = Integer.parseInt(amount);
                 if(i_amount > 0) {
                     Product product = productListAdapter.getItem(i);
+
+                    // Product promotion
+                    ParseQuery<Product> queryProduct = Product.getQuery();
+                    queryProduct.whereEqualTo("objectId",product.getObjectId());
+                    queryProduct.fromPin(DownloadUtils.PIN_PRODUCT);
+
+                    ParseQuery<Promotion> queryPromotion = Promotion.getQuery();
+                    queryPromotion.whereGreaterThan("promotion_apply_from", new Date());
+                    queryPromotion.whereLessThan("promotion_apply_to", new Date());
+                    queryPromotion.whereMatchesQuery("promotion_product_gift", queryProduct);
+                    queryPromotion.fromPin(DownloadUtils.PIN_PROMOTION);
+                    List<Promotion> promotionList = queryPromotion.find();
+
                     final ProductPurchase productPurchase = new ProductPurchase();
                     productPurchase.setName(product.getProductName());
                     productPurchase.setQuantity(i_amount);
                     productPurchase.setPrice(product.getPrice());
                     productPurchase.setProductRelate(product);
                     productPurchase.setUnit(product.getUnit());
+                    productPurchase.setPromotionRelate(promotionList);
 
                     productPurchase.saveEventually();
                     productPurchase.pinInBackground(DownloadUtils.PIN_PRODUCT_PURCHASE, new SaveCallback() {

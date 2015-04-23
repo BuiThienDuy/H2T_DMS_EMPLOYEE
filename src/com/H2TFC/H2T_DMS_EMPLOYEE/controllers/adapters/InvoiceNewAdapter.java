@@ -22,8 +22,9 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.widget.FlowLayout;
 import com.parse.*;
 
-import java.util.List;
-import java.util.Locale;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -53,6 +54,12 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
 
 
             ParseQuery<Promotion> queryPromotion = Promotion.getQuery();
+
+            final Date currentDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+//            queryPromotion.whereGreaterThan("promotion_apply_from",currentDate);
+//            queryPromotion.whereLessThan("promotion_apply_to",currentDate);
             queryPromotion.whereMatchesQuery("promotion_product_gift", queryProduct);
             queryPromotion.fromPin(DownloadUtils.PIN_PROMOTION);
             final View finalV1 = v;
@@ -61,49 +68,67 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
                 public void done(List<Promotion> list, ParseException e) {
                     if (e == null) {
                         for (final Promotion promotion : list) {
-                            Button button = new Button(finalV1.getContext());
-                            button.setText(promotion.getPromotionName());
-                            button.setTextColor(Color.parseColor("#292929"));
-                            button.setTextSize((12 / finalV1.getContext().getApplicationContext().getResources().getDisplayMetrics().scaledDensity));
-                            button.setBackgroundResource(R.drawable.buttonshape);
-                            button.setShadowLayer(Color.parseColor("#5E8AA8"), 0, 0, 5);
-                            FlowLayout.LayoutParams layout_button = new FlowLayout.LayoutParams(ViewGroup
-                                    .LayoutParams.WRAP_CONTENT,20);
-                            layout_button.setMargins(0,5,5,0);
-                            button.setLayoutParams(layout_button);
+                            try {
 
-                            button.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    AlertDialog.Builder dialog = new AlertDialog.Builder(finalV1.getContext());
-                                    dialog.setTitle(finalV1.getContext().getString(R.string.prmotionDialogTitle));
-                                    if(promotion.getDiscount() <= 0) {
-                                        // Product gift
-                                        dialog.setMessage(finalV1.getContext().getString(R.string.promotionType1)
-                                                        + finalV1.getContext().getString(R.string.promotionBuyMsg) + promotion.getQuantityGift() + " " + promotion
-                                                .getProductGift().getProductName() + " " +
-                                                finalV1.getContext().getString(R.string.prmotionGiftMsg) + " " + promotion.getQuantityGifted() + " " +
-                                                promotion.getProductGifted().getProductName()+".");
-                                    } else {
-                                        // Discount
-                                        dialog.setMessage(finalV1.getContext().getString(R.string.promotionType2)
-                                                        + finalV1.getContext().getString(R.string.promotionBuyMsg) + promotion.getQuantityGift() + " " + promotion
-                                                .getProductGift().getProductName() + finalV1.getContext().getString(R.string.willBeDiscountedMsg) + promotion
-                                                .getDiscount() + "%.");
-                                    }
 
-                                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
+                            if (currentDate.after(promotion.getPromotionApplyFrom()) && currentDate.before(promotion
+                                    .getPromotionApplyTo())) {
+                                Button button = new Button(finalV1.getContext());
+                                button.setText(promotion.getPromotionName());
+                                button.setTextColor(Color.parseColor("#292929"));
+                                button.setTextSize((12 / finalV1.getContext().getApplicationContext().getResources().getDisplayMetrics().scaledDensity));
+                                button.setBackgroundResource(R.drawable.buttonshape);
+                                button.setShadowLayer(Color.parseColor("#5E8AA8"), 0, 0, 5);
+                                FlowLayout.LayoutParams layout_button = new FlowLayout.LayoutParams(ViewGroup
+                                        .LayoutParams.WRAP_CONTENT, 20);
+                                layout_button.setMargins(0, 5, 5, 0);
+                                button.setLayoutParams(layout_button);
+
+                                button.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        AlertDialog.Builder dialog = new AlertDialog.Builder(finalV1.getContext());
+                                        dialog.setTitle(finalV1.getContext().getString(R.string.prmotionDialogTitle));
+                                        if (promotion.getDiscount() <= 0) {
+                                            // Product gift
+                                            dialog.setMessage(finalV1.getContext().getString(R.string.promotionType1)
+                                                    + finalV1.getContext().getString(R.string.promotionBuyMsg) +
+                                                    promotion.getQuantityGift() + " " + promotion.getProductGift()
+                                                    .getUnit
+                                                            () + "" +
+                                                    " " + promotion
+                                                    .getProductGift().getProductName() + " " +
+                                                    finalV1.getContext().getString(R.string.prmotionGiftMsg) + " " +
+                                                    promotion.getQuantityGifted() + " "  + promotion.getProductGifted()
+                                                    .getUnit() + " " +
+                                                    promotion.getProductGifted().getProductName() + ".");
+                                        } else {
+                                            // Discount
+                                            dialog.setMessage(finalV1.getContext().getString(R.string.promotionType2)
+                                                    + finalV1.getContext().getString(R.string.promotionBuyMsg) +
+                                                    promotion.getQuantityGift() + " " + promotion.getProductGift()
+                                                    .getUnit
+                                                            () + " " + promotion
+                                                    .getProductGift().getProductName() + finalV1.getContext().getString(R.string.willBeDiscountedMsg) + promotion
+                                                    .getDiscount() + "%.");
                                         }
-                                    });
 
-                                    dialog.show();
-                                }
-                            });
+                                        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
 
-                            flPromotion.addView(button);
+                                        dialog.show();
+                                    }
+                                });
+
+                                flPromotion.addView(button);
+                            }
+                            } catch (Exception ex) {
+
+                            }
                         }
                     }
                 }

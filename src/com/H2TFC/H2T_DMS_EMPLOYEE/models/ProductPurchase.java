@@ -5,6 +5,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.List;
+
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
  * thanhduongpham4293@gmail.com
@@ -59,7 +61,17 @@ public class ProductPurchase extends ParseObject {
         return (Product) getParseObject("product_relate");
     }
 
-    // 6. Query
+    // 6. Promotion relation
+    public void setPromotionRelate(List<Promotion> promotionRelate) {
+        put("promotion_relate",promotionRelate);
+    }
+
+    public List<Promotion> getPromotionRelate() {
+        return getList("promotion_relate");
+    }
+
+
+    // 7. Query
     public static ParseQuery<ProductPurchase> getQuery() {
         return ParseQuery.getQuery(ProductPurchase.class);
     }
