@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -18,11 +19,18 @@ import com.github.mikephil.charting.utils.PercentFormatter;
 public class PieChartItem extends ChartItem {
 
     private Typeface mTf;
+    private String description;
 
     public PieChartItem(ChartData<?> cd, Context c) {
         super(cd);
 
         mTf = Typeface.createFromAsset(c.getAssets(), "OpenSans-Regular.ttf");
+    }
+    public PieChartItem(ChartData<?> cd, Context c,String description) {
+        super(cd);
+
+        mTf = Typeface.createFromAsset(c.getAssets(), "OpenSans-Regular.ttf");
+        this.description = description;
     }
 
     @Override
@@ -42,7 +50,7 @@ public class PieChartItem extends ChartItem {
             convertView = LayoutInflater.from(c).inflate(
                     R.layout.list_item_piechart, null);
             holder.chart = (PieChart) convertView.findViewById(R.id.chart);
-
+            holder.title = (TextView) convertView.findViewById(R.id.title);
             convertView.setTag(holder);
 
         } else {
@@ -53,7 +61,7 @@ public class PieChartItem extends ChartItem {
         holder.chart.setDescription("");
         holder.chart.setHoleRadius(52f);
         holder.chart.setTransparentCircleRadius(57f);
-        holder.chart.setCenterText("MPChart\nAndroid");
+        //holder.chart.setCenterText("MPChart\nAndroid");
         holder.chart.setCenterTextTypeface(mTf);
         holder.chart.setCenterTextSize(18f);
         holder.chart.setUsePercentValues(true);
@@ -72,10 +80,14 @@ public class PieChartItem extends ChartItem {
         // holder.chart.invalidate();
         holder.chart.animateXY(900, 900);
 
+        // set title
+        holder.title.setText(description);
+
         return convertView;
     }
 
     private static class ViewHolder {
         PieChart chart;
+        TextView title;
     }
 }

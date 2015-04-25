@@ -87,7 +87,7 @@
     <string name="updateAreaStatusSuccess">"Cập nhật trạng thái tuyến "</string>
     <string name="viewImage">Xem hình ảnh</string>
     <string name="trungBayTitle">Hình ảnh trưng bày quầy kệ</string>
-    <string name="updateSurveyPointTitle">Cập nhật chi tiết điểm khảo sát</string>
+    <string name="updateSurveyPointTitle">Cập nhật chi tiết điểm bán hàng</string>
     <string name="createSurveyStorePointTitle">Tạo điểm khảo sát</string>
     <string name="yourDeviceDoesNotSupportCamera">Thiết bị cầm tay của bạn không hỗ trợ camera!</string>
     <string name="surveyStorePointTitle">Khảo sát các điểm cửa hàng</string>
@@ -163,4 +163,24 @@
     <string name="willBeDiscountedMsg">" sẽ được giảm giá "</string>
     <string name="promotionS">Khuyến mãi:</string>
     <string name="sGift">Tặng</string>
+    <string name="viewReport">Xem báo cáo</string>
+    <string name="loadDebt">Đang tải dữ liệu công nợ...</string>
+    <string name="userOrPasswordIncorrect">Tên tài khoản hoặc mật khẩu không đúng</string>
+    <string name="realIncome">Thực thu</string>
+    <string name="doanhThuThucThuChart">1. Biểu đồ doanh thu, thực thu</string>
+    <string name="diemCuaHangChart">2. Biểu đồ tình trạng điểm cửa hàng</string>
+    <string name="CHO_CAP_TREN">Chờ cấp trên</string>
+    <string name="BAN_HANG">Bán hàng</string>
+    <string name="DANG_THOA_THUAN">Đang thỏa thuận</string>
+    <string name="KHAO_SAT">Khảo sát</string>
+    <string name="KHONG_DU_TIEU_CHUAN">Không đủ tiêu chuẩn</string>
+    <string name="TIEM_NANG">Tiềm năng</string>
+    <string name="donHangChart">3. Biểu đồ tình trạng đơn hàng</string>
+    <string name="quantity">Số lượng</string>
+    <string name="soLuongHangBanChart">4. Biểu đồ số lượng hàng bán</string>
+    <string name="fromDate">Từ ngày</string>
+    <string name="fromDateHint">Từ ngày...</string>
+    <string name="toDate">Đến ngày</string>
+    <string name="toDateHint">Đến ngày...</string>
+    <string name="reportTitle">Báo cáo</string>
 </resources>

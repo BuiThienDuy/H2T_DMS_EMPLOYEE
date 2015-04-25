@@ -3,23 +3,22 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.FeedBackDialog;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceHistoryActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceManagementActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceNewActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.*;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreType;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
-import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.parse.*;
 
 import java.util.List;
@@ -33,25 +32,25 @@ import java.util.Locale;
  * All rights reserved
  */
 public class StoreDetailActivity extends Activity {
-    BootstrapButton btnTrungBay,btnCapNhat,btnQuayVe;
+    BootstrapButton btnTrungBay, btnCapNhat, btnQuayVe;
 
-    BootstrapEditText etTenCuaHang,etTenChuCuaHang,etDiaChi,etSDT,etDoanhThu,etMatHangDoiThu;
+    BootstrapEditText etTenCuaHang, etTenChuCuaHang, etDiaChi, etSDT, etDoanhThu, etMatHangDoiThu;
 
     TextView tvBucAnhDaChup;
 
     Spinner spnLoaiCuaHang;
 
-    public String storeID,store_image_id;
+    public String storeID, store_image_id;
 
     ArrayAdapter<String> storeTypeAdapter;
 
     RelativeLayout dummy;
 
     // use for vieng tham
-    BootstrapButton btnLichSu,btnDatHang,btnPhanHoi;
+    BootstrapButton btnLichSu, btnDatHang, btnPhanHoi;
     BootstrapEditText etCongNo;
     ImageView ivCongNo;
-    LinearLayout layoutTitleCongNo,layoutEditCongNo,layoutButton;
+    LinearLayout layoutTitleCongNo, layoutEditCongNo, layoutButton;
     private double[] congNoMax;
 
     @Override
@@ -62,17 +61,17 @@ public class StoreDetailActivity extends Activity {
         setTitle(getString(R.string.updateSurveyPointTitle));
         congNoMax = new double[1];
         congNoMax[0] = 0;
-        if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
+        if (getIntent().hasExtra("EXTRAS_STORE_ID")) {
             storeID = getIntent().getStringExtra("EXTRAS_STORE_ID");
         }
-        if(getIntent().hasExtra("EXTRAS_STORE_IMAGE_ID")) {
+        if (getIntent().hasExtra("EXTRAS_STORE_IMAGE_ID")) {
             store_image_id = getIntent().getStringExtra("EXTRAS_STORE_IMAGE_ID");
         }
 
         InitializeComponent();
         SetupEvent();
 
-        if(ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
+        if (ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
             ParseQuery<StoreImage> storeImageParseQuery = StoreImage.getQuery();
             storeImageParseQuery.whereEqualTo("employee_id", ParseUser.getCurrentUser().getObjectId());
             storeImageParseQuery.findInBackground(new FindCallback<StoreImage>() {
@@ -96,7 +95,7 @@ public class StoreDetailActivity extends Activity {
         GetAndShowStoreDetail();
 
 
-        if(getIntent().hasExtra("EXTRAS_READ_ONLY")) {
+        if (getIntent().hasExtra("EXTRAS_READ_ONLY")) {
             dummy.setFocusableInTouchMode(true);
             dummy.requestFocus();
             etTenCuaHang.setEnabled(false);
@@ -110,7 +109,7 @@ public class StoreDetailActivity extends Activity {
             btnQuayVe.setVisibility(View.GONE);
         }
 
-        if(getIntent().hasExtra("EXTRAS_VIENG_THAM")){
+        if (getIntent().hasExtra("EXTRAS_VIENG_THAM")) {
             layoutButton.setVisibility(View.VISIBLE);
             layoutTitleCongNo.setVisibility(View.VISIBLE);
             layoutEditCongNo.setVisibility(View.VISIBLE);
@@ -125,7 +124,7 @@ public class StoreDetailActivity extends Activity {
         congNoHienTai[0] = 0;
 
         ParseQuery<Invoice> invoiceParseQuery = Invoice.getQuery();
-        invoiceParseQuery.whereEqualTo("storeId", storeID);
+        invoiceParseQuery.whereEqualTo("storeId", store.getObjectId());
         invoiceParseQuery.fromPin(DownloadUtils.PIN_INVOICE);
         invoiceParseQuery.findInBackground(new FindCallback<Invoice>() {
             @Override
@@ -135,31 +134,31 @@ public class StoreDetailActivity extends Activity {
                         congNoHienTai[0] += invoice.getInvoicePrice();
                     }
 
-                    if (congNoMax[0] == 0) {
-                        ParseQuery<StoreType> storeTypeParseQuery = StoreType.getQuery();
-                        storeTypeParseQuery.whereEqualTo("store_type_name", store.getStoreType());
-                        storeTypeParseQuery.fromPin(DownloadUtils.PIN_STORE_TYPE);
-                        storeTypeParseQuery.getFirstInBackground(new GetCallback<StoreType>() {
-                            @Override
-                            public void done(StoreType storeType, ParseException e) {
-                                if (e == null) {
+
+                    ParseQuery<StoreType> storeTypeParseQuery = StoreType.getQuery();
+                    storeTypeParseQuery.whereEqualTo("store_type_name", store.getStoreType());
+                    storeTypeParseQuery.fromPin(DownloadUtils.PIN_STORE_TYPE);
+                    storeTypeParseQuery.getFirstInBackground(new GetCallback<StoreType>() {
+                        @Override
+                        public void done(StoreType storeType, ParseException e) {
+                            if (e == null) {
+                                if (congNoMax[0] == 0) {
                                     congNoMax[0] = storeType.getDefaultDebt();
-
-                                    if (congNoHienTai[0] >= congNoMax[0]) {
-                                        ivCongNo.setBackgroundColor(Color.RED);
-                                    } else if (congNoHienTai[0] < congNoMax[0] && congNoHienTai[0] >= congNoMax[0] * 2 / 3) {
-                                        ivCongNo.setBackgroundColor(Color.YELLOW);
-                                    } else {
-                                        ivCongNo.setBackgroundColor(Color.GREEN);
-                                    }
-
-
-                                    etCongNo.setText(String.format(Locale.CHINESE, "%1$,.0f", congNoHienTai[0]) + "/" + String.format
-                                            (Locale.CHINESE, "%1$,.0f", congNoMax[0]) + " " + getString(R.string.VND));
                                 }
+                                if (congNoHienTai[0] >= congNoMax[0]) {
+                                    ivCongNo.setBackgroundColor(Color.RED);
+                                } else if (congNoHienTai[0] < congNoMax[0] && congNoHienTai[0] >= congNoMax[0] * 2 / 3) {
+                                    ivCongNo.setBackgroundColor(Color.YELLOW);
+                                } else {
+                                    ivCongNo.setBackgroundColor(Color.GREEN);
+                                }
+
+
+                                etCongNo.setText(String.format(Locale.CHINESE, "%1$,.0f", congNoHienTai[0]) + "/" + String.format
+                                        (Locale.CHINESE, "%1$,.0f", congNoMax[0]) + " " + getString(R.string.VND));
                             }
-                        });
-                    }
+                        }
+                    });
 
 
                 }
@@ -173,7 +172,7 @@ public class StoreDetailActivity extends Activity {
         try {
             List<StoreType> storeTypeList = storeTypeParseQuery.find();
             String[] items = new String[storeTypeList.size()];
-            for(int i = 0 ; i < storeTypeList.size(); i++) {
+            for (int i = 0; i < storeTypeList.size(); i++) {
                 items[i] = storeTypeList.get(i).getStoreTypeName();
             }
             storeTypeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
@@ -183,15 +182,15 @@ public class StoreDetailActivity extends Activity {
             e.printStackTrace();
         }
 
-        if(storeID != null) {
+        if (storeID != null) {
             // Get the store image
             ParseQuery<StoreImage> imageQuery = StoreImage.getQuery();
             imageQuery.fromPin(DownloadUtils.PIN_STORE_IMAGE);
-            imageQuery.whereEqualTo("store_id",storeID);
+            imageQuery.whereEqualTo("store_id", storeID);
 
             ParseQuery<StoreImage> localImageQuery = StoreImage.getQuery();
             localImageQuery.fromPin("PIN_DRAFT_PHOTO");
-            localImageQuery.whereEqualTo("store_id",storeID);
+            localImageQuery.whereEqualTo("store_id", storeID);
             try {
                 int totalImage = imageQuery.count() + localImageQuery.count();
                 tvBucAnhDaChup.setText(totalImage + getString(R.string.captureImage));
@@ -206,7 +205,7 @@ public class StoreDetailActivity extends Activity {
             storeParseQuery.getFirstInBackground(new GetCallback<Store>() {
                 @Override
                 public void done(Store store, ParseException e) {
-                    if(e == null) {
+                    if (e == null) {
                         try {
                             etTenCuaHang.setText(store.getName());
                             etTenChuCuaHang.setText(store.getStoreOwner());
@@ -217,10 +216,8 @@ public class StoreDetailActivity extends Activity {
                             congNoMax[0] = store.getMaxDebt();
 
                             int itemPosition = -1;
-                            for (int index = 0, count = storeTypeAdapter.getCount(); index < count; ++index)
-                            {
-                                if (storeTypeAdapter.getItem(index).equals(store.getStoreType()))
-                                {
+                            for (int index = 0, count = storeTypeAdapter.getCount(); index < count; ++index) {
+                                if (storeTypeAdapter.getItem(index).equals(store.getStoreType())) {
                                     itemPosition = index;
                                     break;
                                 }
@@ -230,7 +227,7 @@ public class StoreDetailActivity extends Activity {
                             if (getIntent().hasExtra("EXTRAS_VIENG_THAM")) {
                                 GetAndShowDebt(store);
                             }
-                        } catch(Exception ex) {
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     } else {
@@ -245,10 +242,10 @@ public class StoreDetailActivity extends Activity {
         btnTrungBay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(StoreDetailActivity.this,TrungBayActivity.class);
-                intent.putExtra("EXTRAS_STORE_ID",storeID);
-                intent.putExtra("EXTRAS_STORE_IMAGE_ID",store_image_id);
-                if(getIntent().hasExtra("EXTRAS_READ_ONLY")) {
+                Intent intent = new Intent(StoreDetailActivity.this, TrungBayActivity.class);
+                intent.putExtra("EXTRAS_STORE_ID", storeID);
+                intent.putExtra("EXTRAS_STORE_IMAGE_ID", store_image_id);
+                if (getIntent().hasExtra("EXTRAS_READ_ONLY")) {
                     intent.putExtra("EXTRAS_READ_ONLY", true);
                 }
                 startActivity(intent);
@@ -261,23 +258,23 @@ public class StoreDetailActivity extends Activity {
             public void onClick(View v) {
                 ParseQuery<Store> storeParseQuery = Store.getQuery();
                 storeParseQuery.fromPin(DownloadUtils.PIN_STORE);
-                storeParseQuery.whereEqualTo("objectId",storeID);
+                storeParseQuery.whereEqualTo("objectId", storeID);
                 storeParseQuery.getFirstInBackground(new GetCallback<Store>() {
                     @Override
                     public void done(Store store, ParseException e) {
-                         //
+                        //
                         String tenCuaHang = etTenCuaHang.getText().toString();
                         String tenChuCuaHang = etTenChuCuaHang.getText().toString();
                         String diaChi = etDiaChi.getText().toString();
                         String sdt = etSDT.getText().toString();
                         String matHangDoiThuCanhTranh = etMatHangDoiThu.getText().toString();
-                        String sDoanhThu = etDoanhThu.getText().toString().replace(",","").replace(".","");
+                        String sDoanhThu = etDoanhThu.getText().toString().replace(",", "").replace(".", "");
 
 
                         String error_msg = ValidateInput();
                         boolean error_existed = !error_msg.equals("");
 
-                        if(error_existed) {
+                        if (error_existed) {
                             Toast.makeText(StoreDetailActivity.this, error_msg, Toast.LENGTH_LONG).show();
                         } else {
                             double doanhThu = Double.parseDouble(sDoanhThu);
@@ -298,7 +295,7 @@ public class StoreDetailActivity extends Activity {
                             });
                             // save
                             store.saveEventually();
-                            Toast.makeText(StoreDetailActivity.this,getString(R.string.updateSuccess),Toast
+                            Toast.makeText(StoreDetailActivity.this, getString(R.string.updateSuccess), Toast
                                     .LENGTH_LONG).show();
                             finish();
                         }
@@ -319,7 +316,7 @@ public class StoreDetailActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StoreDetailActivity.this, InvoiceHistoryActivity.class);
-                intent.putExtra("EXTRAS_STORE_ID",storeID);
+                intent.putExtra("EXTRAS_STORE_ID", storeID);
                 startActivity(intent);
             }
         });
@@ -327,8 +324,9 @@ public class StoreDetailActivity extends Activity {
         btnDatHang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(StoreDetailActivity.this, InvoiceNewActivity.class);
-                intent.putExtra("EXTRAS_STORE_ID",storeID);
+                intent.putExtra("EXTRAS_STORE_ID", storeID);
                 startActivity(intent);
             }
         });
@@ -370,6 +368,7 @@ public class StoreDetailActivity extends Activity {
 
         ivCongNo = (ImageView) findViewById(R.id.activity_store_detail_iv_cong_no);
         etCongNo = (BootstrapEditText) findViewById(R.id.activity_store_detail_et_cong_no);
+        etCongNo.setEnabled(false);
 
     }
 
@@ -379,7 +378,7 @@ public class StoreDetailActivity extends Activity {
         ParseObject.unpinAllInBackground("PIN_DRAFT_PHOTO", new DeleteCallback() {
             @Override
             public void done(ParseException e) {
-                if(e == null) {
+                if (e == null) {
 
                 } else {
 
@@ -393,11 +392,11 @@ public class StoreDetailActivity extends Activity {
         super.onResume();
         ParseQuery<StoreImage> imageQuery = StoreImage.getQuery();
         imageQuery.fromPin(DownloadUtils.PIN_STORE_IMAGE);
-        imageQuery.whereEqualTo("store_id",store_image_id);
+        imageQuery.whereEqualTo("store_id", store_image_id);
 
         ParseQuery<StoreImage> localImageQuery = StoreImage.getQuery();
         localImageQuery.fromPin("PIN_DRAFT_PHOTO");
-        localImageQuery.whereEqualTo("store_id",storeID);
+        localImageQuery.whereEqualTo("store_id", storeID);
         try {
             int totalImage = imageQuery.count() + localImageQuery.count();
             tvBucAnhDaChup.setText(totalImage + getString(R.string.captureImage));
@@ -415,46 +414,46 @@ public class StoreDetailActivity extends Activity {
         String matHangDoiThuCanhTranh = etMatHangDoiThu.getText().toString();
         String soBucAnhCup = tvBucAnhDaChup.getText().toString();
 
-        String sDoanhThu = etDoanhThu.getText().toString().replace(",", "").replace(".","");
+        String sDoanhThu = etDoanhThu.getText().toString().replace(",", "").replace(".", "");
         double doanhThu;
-        if(tenCuaHang.trim().length() <= 0 || tenCuaHang.trim().length() > 100) {
+        if (tenCuaHang.trim().length() <= 0 || tenCuaHang.trim().length() > 100) {
             error_msg = getString(R.string.errorInputStoreName);
             return error_msg;
         }
 
-        if(tenChuCuaHang.trim().length() <= 0 || tenChuCuaHang.trim().length() > 100) {
+        if (tenChuCuaHang.trim().length() <= 0 || tenChuCuaHang.trim().length() > 100) {
             error_msg = getString(R.string.errorInputStoreOwner);
             return error_msg;
         }
 
-        if(diaChi.trim().length() <= 0) {
+        if (diaChi.trim().length() <= 0) {
             error_msg = getString(R.string.errorInputAddress);
             return error_msg;
         }
 
-        if(sdt.trim().length() > 11) {
+        if (sdt.trim().length() > 11) {
             error_msg = getString(R.string.errorInputPhoneNumber);
             return error_msg;
         }
 
         try {
             doanhThu = Double.parseDouble(sDoanhThu);
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             error_msg = getString(R.string.errorInputIncome);
             return error_msg;
         } finally {
-            if(sDoanhThu.trim().length() <= 0) {
+            if (sDoanhThu.trim().length() <= 0) {
                 error_msg = getString(R.string.errorInputIncome);
                 return error_msg;
             }
         }
 
-        if(soBucAnhCup.equals("0" + getString(R.string.captureImage))) {
+        if (soBucAnhCup.equals("0" + getString(R.string.captureImage))) {
             error_msg = getString(R.string.errorInputImage);
             return error_msg;
         }
 
-        if(matHangDoiThuCanhTranh.trim().length() <= 0) {
+        if (matHangDoiThuCanhTranh.trim().length() <= 0) {
             error_msg = getString(R.string.errorInputCompetitiveProduct);
             return error_msg;
         }

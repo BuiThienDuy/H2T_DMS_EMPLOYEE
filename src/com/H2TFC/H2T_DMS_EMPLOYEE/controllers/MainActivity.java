@@ -39,6 +39,19 @@ public class MainActivity extends Activity {
 
                 }
             });
+            DownloadUtils.DownloadParseStoreType(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+
+                }
+            });
+
+            DownloadUtils.DownloadParseProductPurchase(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+
+                }
+            });
         }
 
         btnViengTham = (BootstrapButton) findViewById(R.id.activity_main_btn_viengtham);

@@ -175,7 +175,7 @@ public class InvoiceManagementActivity extends Activity {
                                 status = Invoice.DA_THANH_TOAN;
                                 break;
                         }
-                        Toast.makeText(InvoiceManagementActivity.this,"Adding " + status,Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(InvoiceManagementActivity.this,"Adding " + status,Toast.LENGTH_SHORT).show();
                         statusSelected.add(status);
                     }
                 }

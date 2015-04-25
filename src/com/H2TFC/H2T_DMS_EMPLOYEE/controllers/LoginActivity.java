@@ -163,7 +163,8 @@ public class LoginActivity extends Activity {
                                 }
                             } else {
                                 progressDialog.dismiss();
-                                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, getString(R.string.userOrPasswordIncorrect) , Toast
+                                        .LENGTH_LONG).show();
                             }
                         }
                     });
@@ -307,7 +308,6 @@ public class LoginActivity extends Activity {
                                                     AlertDialog.Builder dialog = new AlertDialog.Builder
                                                             (LoginActivity.this);
 
-
                                                     dialog.setTitle(getString(R.string.errorThereAreNoStoreNear));
                                                     dialog.setCancelable(false);
                                                     dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
@@ -327,7 +327,8 @@ public class LoginActivity extends Activity {
                                                     return;
                                                 }
                                             } else {
-                                                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(LoginActivity.this, "1111." + e.getMessage(), Toast
+                                                        .LENGTH_SHORT).show();
                                                 progressDialog.dismiss();
                                             }
                                         }
@@ -335,7 +336,8 @@ public class LoginActivity extends Activity {
 
                                     });
                                 } else {
-                                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "2222." + e.getMessage(), Toast.LENGTH_SHORT)
+                                            .show();
                                     progressDialog.dismiss();
                                 }
                             }

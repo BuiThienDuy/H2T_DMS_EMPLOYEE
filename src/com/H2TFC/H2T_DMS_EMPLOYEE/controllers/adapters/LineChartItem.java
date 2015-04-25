@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -17,11 +18,17 @@ import com.github.mikephil.charting.data.LineData;
 public class LineChartItem extends ChartItem {
 
     private Typeface mTf;
+    private String description;
 
     public LineChartItem(ChartData<?> cd, Context c) {
         super(cd);
-
         mTf = Typeface.createFromAsset(c.getAssets(), "OpenSans-Regular.ttf");
+    }
+
+    public LineChartItem(ChartData<?> cd, Context c,String description) {
+        super(cd);
+        mTf = Typeface.createFromAsset(c.getAssets(), "OpenSans-Regular.ttf");
+        this.description = description;
     }
 
     @Override
@@ -41,7 +48,7 @@ public class LineChartItem extends ChartItem {
             convertView = LayoutInflater.from(c).inflate(
                     R.layout.list_item_linechart, null);
             holder.chart = (LineChart) convertView.findViewById(R.id.chart);
-
+            holder.title = (TextView) convertView.findViewById(R.id.title);
             convertView.setTag(holder);
 
         } else {
@@ -75,10 +82,14 @@ public class LineChartItem extends ChartItem {
         // holder.chart.invalidate();
         holder.chart.animateX(750);
 
+        // set title
+        holder.title.setText(description);
+
         return convertView;
     }
 
     private static class ViewHolder {
         LineChart chart;
+        TextView title;
     }
 }

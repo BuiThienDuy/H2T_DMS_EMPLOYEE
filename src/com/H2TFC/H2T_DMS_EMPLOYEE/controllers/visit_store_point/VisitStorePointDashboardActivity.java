@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceManagementActivity;
+import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.view_report.ViewReportActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Attendance;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
@@ -29,7 +30,7 @@ import java.util.List;
  * All rights reserved
  */
 public class VisitStorePointDashboardActivity extends Activity {
-    Button btnInvoiceManagement,btnVisitStore;
+    Button btnInvoiceManagement,btnVisitStore,btnViewReport;
     String employeeStoreId;
 
     @Override
@@ -41,6 +42,13 @@ public class VisitStorePointDashboardActivity extends Activity {
 
         btnInvoiceManagement = (Button) findViewById(R.id.activity_viengtham_dashboard_btn_invoice_management);
         btnVisitStore = (Button) findViewById(R.id.dashboard_btn_visit_store);
+        btnViewReport = (Button) findViewById(R.id.dashboard_btn_view_report);
+
+
+        if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
+            employeeStoreId = getIntent().getStringExtra("EXTRAS_STORE_ID");
+        }
+
         btnInvoiceManagement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,14 +58,19 @@ public class VisitStorePointDashboardActivity extends Activity {
             }
         });
 
-        if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
-            employeeStoreId = getIntent().getStringExtra("EXTRAS_STORE_ID");
-        }
         btnVisitStore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(VisitStorePointDashboardActivity.this, VisitStorePointActivity.class);
                 intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
+                startActivity(intent);
+            }
+        });
+
+        btnViewReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VisitStorePointDashboardActivity.this, ViewReportActivity.class);
                 startActivity(intent);
             }
         });
@@ -98,7 +111,7 @@ public class VisitStorePointDashboardActivity extends Activity {
                                         .PIN_ATTENDANCE + "_DRAFT", new DeleteCallback() {
                                     @Override
                                     public void done(ParseException e) {
-                                        Intent intent = new Intent(VisitStorePointDashboardActivity.this,MainActivity
+                                        Intent intent = new Intent(VisitStorePointDashboardActivity.this, MainActivity
                                                 .class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent
                                                 .FLAG_ACTIVITY_NEW_TASK);
@@ -108,6 +121,7 @@ public class VisitStorePointDashboardActivity extends Activity {
 
                             }
                         });
+                        dialog.show();
                     }
                 }
             }

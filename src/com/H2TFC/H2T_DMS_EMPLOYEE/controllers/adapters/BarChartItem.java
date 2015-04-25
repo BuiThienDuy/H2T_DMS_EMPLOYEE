@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -16,10 +17,17 @@ import com.github.mikephil.charting.data.ChartData;
 public class BarChartItem extends ChartItem {
     
     private Typeface mTf;
+    private String description = "";
     
     public BarChartItem(ChartData<?> cd, Context c) {
         super(cd);
 
+        mTf = Typeface.createFromAsset(c.getAssets(), "OpenSans-Regular.ttf");
+    }
+
+    public BarChartItem(ChartData<?> cd, Context c, String description) {
+        super(cd);
+        this.description = description;
         mTf = Typeface.createFromAsset(c.getAssets(), "OpenSans-Regular.ttf");
     }
 
@@ -40,6 +48,7 @@ public class BarChartItem extends ChartItem {
             convertView = LayoutInflater.from(c).inflate(
                     R.layout.list_item_barchart, null);
             holder.chart = (BarChart) convertView.findViewById(R.id.chart);
+            holder.title = (TextView) convertView.findViewById(R.id.title);
 
             convertView.setTag(holder);
 
@@ -77,10 +86,14 @@ public class BarChartItem extends ChartItem {
 //        holder.chart.invalidate();
         holder.chart.animateY(700);
 
+        // set title
+        holder.title.setText(description);
+
         return convertView;
     }
     
     private static class ViewHolder {
         BarChart chart;
+        TextView title;
     }
 }
