@@ -47,7 +47,8 @@
     <string name="password">Mật khẩu</string>
     <string name="username">Tên đăng nhập</string>
     <string name="companyName">H2T DMS</string>
-    <string name="emptyTrungBay">Hiện chưa có hình ảnh trưng bày cửa hàng nào, Vui lòng nhấn vào nút \'+\' để thêm hình ảnh trưng bày cửa hàng</string>
+    <string name="emptyTrungBay">Hiện chưa có hình ảnh trưng bày cửa hàng nào, Vui lòng nhấn vào nút \'thêm\' để thêm
+        hình ảnh trưng bày cửa hàng</string>
     <string name="trackInvoice">Theo dõi đơn hàng</string>
     <string name="storeCaring">Chăm sóc cửa hàng</string>
     <string name="status">Tình trạng:</string>
@@ -183,4 +184,12 @@
     <string name="toDate">Đến ngày</string>
     <string name="toDateHint">Đến ngày...</string>
     <string name="reportTitle">Báo cáo</string>
+    <string name="debtInYellowStatus">Hiện tại công nợ của cửa hàng đang ở mức cảnh báo, vui lòng nhắc nhở chủ cửa
+        hàng thanh toán.</string>
+    <string name="warning">Lưu ý</string>
+    <string name="danger">Cảnh báo</string>
+    <string name="debtInRedStatus">Không thể tạo được đơn hàng vì công nợ vượt quá mức đỏ, vui lòng gửi phản
+        hồi lên nhân viên quản lý để được gia hạn công nợ.</string>
+    <string name="confirmOut">Nhấn nút \'quay về\' lần nữa để thoát ứng dụng</string>
+    <string name="areYouSureYouWantToEndSession">Bạn có chắc là bạn muốn kết thúc phiên làm việc này không?</string>
 </resources>

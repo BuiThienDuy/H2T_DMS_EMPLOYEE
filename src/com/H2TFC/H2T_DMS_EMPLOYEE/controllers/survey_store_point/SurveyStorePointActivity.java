@@ -531,11 +531,10 @@ public class SurveyStorePointActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 AlertDialog.Builder confirmDialog = new AlertDialog.Builder(SurveyStorePointActivity.this);
-                confirmDialog.setMessage(getString(R.string.confirmLogOut));
+                confirmDialog.setMessage(getString(R.string.areYouSureYouWantToEndSession));
                 confirmDialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ParseUser.logOut();
                         Intent intent = new Intent(SurveyStorePointActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -709,7 +708,9 @@ public class SurveyStorePointActivity extends Activity {
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }
 
         this.doubleBackToExitPressedOnce = true;

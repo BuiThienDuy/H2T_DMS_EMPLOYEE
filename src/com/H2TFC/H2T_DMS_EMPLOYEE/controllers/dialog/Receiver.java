@@ -16,7 +16,6 @@ public class Receiver extends ParsePushBroadcastReceiver {
 
     @Override
     public void onPushOpen(Context context, Intent intent) {
-        Log.e("Push", "Clicked");
         Intent i;
         if(ParseUser.getCurrentUser() != null) {
             i = new Intent(context, SurveyStorePointActivity.class);
@@ -26,5 +25,11 @@ public class Receiver extends ParsePushBroadcastReceiver {
         i.putExtras(intent.getExtras());
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+
     }
 }

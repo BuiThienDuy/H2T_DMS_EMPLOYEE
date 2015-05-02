@@ -280,7 +280,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_below="@+id/activity_store_new_layout_title_trung_bay"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:gravity="center_vertical">
 
         <com.beardedhen.androidbootstrap.BootstrapButton
@@ -293,8 +293,9 @@
 
             <TextView
                     android:id="@+id/activity_store_new_tv_total_image"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
                     android:text="@string/totalImageCapture"/>

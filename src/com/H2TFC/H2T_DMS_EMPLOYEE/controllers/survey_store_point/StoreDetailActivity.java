@@ -1,6 +1,8 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -52,6 +54,8 @@ public class StoreDetailActivity extends Activity {
     ImageView ivCongNo;
     LinearLayout layoutTitleCongNo, layoutEditCongNo, layoutButton;
     private double[] congNoMax;
+
+    int invoiceAllow = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,10 +151,13 @@ public class StoreDetailActivity extends Activity {
                                 }
                                 if (congNoHienTai[0] >= congNoMax[0]) {
                                     ivCongNo.setBackgroundColor(Color.RED);
+                                    invoiceAllow = 2;
                                 } else if (congNoHienTai[0] < congNoMax[0] && congNoHienTai[0] >= congNoMax[0] * 2 / 3) {
                                     ivCongNo.setBackgroundColor(Color.YELLOW);
+                                    invoiceAllow = 1;
                                 } else {
                                     ivCongNo.setBackgroundColor(Color.GREEN);
+                                    invoiceAllow = 0;
                                 }
 
 
@@ -324,10 +331,41 @@ public class StoreDetailActivity extends Activity {
         btnDatHang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(StoreDetailActivity.this, InvoiceNewActivity.class);
-                intent.putExtra("EXTRAS_STORE_ID", storeID);
-                startActivity(intent);
+                if(invoiceAllow == 0) {
+                    Intent intent = new Intent(StoreDetailActivity.this, InvoiceNewActivity.class);
+                    intent.putExtra("EXTRAS_STORE_ID", storeID);
+                    startActivity(intent);
+                }
+                    if(invoiceAllow == 1) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(StoreDetailActivity.this);
+                        dialog.setMessage(getString(R.string.debtInYellowStatus));
+                        dialog.setTitle(getString(R.string.warning));
+                        dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(StoreDetailActivity.this, InvoiceNewActivity.class);
+                                intent.putExtra("EXTRAS_STORE_ID", storeID);
+                                startActivity(intent);
+                            }
+                        });
+                        dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                    if(invoiceAllow == 2) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(StoreDetailActivity.this);
+                        dialog.setMessage(getString(R.string.debtInRedStatus));
+                        dialog.setTitle(getString(R.string.danger));
+                        dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
             }
         });
 

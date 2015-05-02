@@ -49,13 +49,12 @@
                 android:background="#FFFFFF"
                 style="?android:buttonBarButtonStyle"/>
         <Button
-                android:visibility="invisible"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:drawableTop="@drawable/image_viengtham_dashboard_invoice_management"
-                android:text="@string/trackInvoice"
+                android:drawableTop="@drawable/image_dashboard_log_out"
+                android:text="@string/logOut"
                 android:layout_weight="1"
-                android:id="@+id/activity_viengtham_dashboard_btn_dummy"
+                android:id="@+id/activity_viengtham_dashboard_btn_log_out"
                 android:background="#FFFFFF"
                 style="?android:buttonBarButtonStyle"/>
     </LinearLayout>

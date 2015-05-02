@@ -333,7 +333,7 @@ public class ViewReportActivity extends Activity {
 
         // space between slices
         d.setSliceSpace(2f);
-        d.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        d.setColors(ColorTemplate.JOYFUL_COLORS);
 
         PieData cd = new PieData(q, d);
         return cd;
@@ -392,7 +392,7 @@ public class ViewReportActivity extends Activity {
 
         // space between slices
         d.setSliceSpace(2f);
-        d.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        d.setColors(ColorTemplate.JOYFUL_COLORS);
 
         PieData cd = new PieData(q, d);
         return cd;
@@ -458,7 +458,7 @@ public class ViewReportActivity extends Activity {
 
         BarDataSet d = new BarDataSet(entries, getString(R.string.quantity));
         d.setBarSpacePercent(20f);
-        d.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        d.setColors(ColorTemplate.JOYFUL_COLORS);
         d.setHighLightAlpha(255);
 
         BarData cd = new BarData(productNameArray, d);

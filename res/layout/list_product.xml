@@ -31,12 +31,12 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:orientation="vertical">
-            <TextView
+            <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
                     android:id="@+id/list_product_tv_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/list_product_ex_name"
-                    style="?android:textAppearanceLarge"
+                    android:maxLines="2"
                     android:textColor="#27657E"
                     android:textStyle="bold"/>
                 <com.H2TFC.H2T_DMS_EMPLOYEE.widget.FlowLayout
@@ -53,9 +53,8 @@
                 android:layout_height="match_parent"/>
     <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/list_product_et_amount"
-            android:layout_width="0dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="0"
             android:gravity="center"
             android:layout_marginLeft="10dp"
@@ -68,7 +67,7 @@
                 android:layout_width="1dp"
                 android:layout_height="match_parent"/>
 
-    <TextView
+    <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
             android:id="@+id/list_product_tv_unit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -78,12 +77,13 @@
             android:layout_marginStart="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
+            android:singleLine="true"
             />
         <View
                 android:background="#000000"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"/>
-    <TextView
+    <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
             android:id="@+id/list_product_tv_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -93,6 +93,7 @@
             android:layout_weight="3"
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
+            android:maxLines="2"
             />
 </LinearLayout>
 

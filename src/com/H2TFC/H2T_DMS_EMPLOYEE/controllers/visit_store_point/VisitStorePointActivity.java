@@ -74,6 +74,8 @@ public class VisitStorePointActivity extends Activity {
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
                     intent.putExtra("EXTRAS_VIENG_THAM", true);
+                    intent.putExtra("EXTRAS_READ_ONLY", true);
+
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(VisitStorePointActivity.this,StoreDetailActivity.class);

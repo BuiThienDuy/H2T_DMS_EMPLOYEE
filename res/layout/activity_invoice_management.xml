@@ -7,18 +7,18 @@
               android:orientation="horizontal"
               android:baselineAligned="true">
     <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="4"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#CCCCCC"
             android:orientation="vertical"
             android:padding="1dp">
-        <TextView
+        <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/invoiceSearch"
                 style="?android:textAppearanceLarge"
                 android:gravity="center"
+                android:singleLine="true"
                 android:padding="5dp"
                 android:background="@color/white"
                 android:drawableLeft="@android:drawable/ic_menu_search"
@@ -100,17 +100,17 @@
                 android:layout_marginEnd="10dp"/>
     </LinearLayout>
     <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="6"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="1dp"
             android:orientation="vertical">
-        <TextView
+        <com.beardedhen.androidbootstrap.utils.AutofitTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/invoiceSearchStatus"
                 style="?android:textAppearanceLarge"
                 android:padding="5dp"
+                android:singleLine="true"
                 android:gravity="center_horizontal"/>
         <View
               android:background="#CCCCCC"
@@ -123,10 +123,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/activity_invoice_management_lv_invoice"/>
-            <TextView
+            <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
                     android:id="@+id/activity_invoice_tv_empty"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:maxLines="2"
                     android:text="@string/invoiceEmpty"
                     style="?android:textAppearanceLarge"
                     android:gravity="center"/>

@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceManagementActivity;
@@ -30,7 +32,7 @@ import java.util.List;
  * All rights reserved
  */
 public class VisitStorePointDashboardActivity extends Activity {
-    Button btnInvoiceManagement,btnVisitStore,btnViewReport;
+    Button btnInvoiceManagement,btnVisitStore,btnViewReport,btnLogOut;
     String employeeStoreId;
 
     @Override
@@ -43,6 +45,7 @@ public class VisitStorePointDashboardActivity extends Activity {
         btnInvoiceManagement = (Button) findViewById(R.id.activity_viengtham_dashboard_btn_invoice_management);
         btnVisitStore = (Button) findViewById(R.id.dashboard_btn_visit_store);
         btnViewReport = (Button) findViewById(R.id.dashboard_btn_view_report);
+        btnLogOut = (Button) findViewById(R.id.activity_viengtham_dashboard_btn_log_out);
 
 
         if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
@@ -71,6 +74,16 @@ public class VisitStorePointDashboardActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(VisitStorePointDashboardActivity.this, ViewReportActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseUser.logOut();
+                Intent intent = new Intent(VisitStorePointDashboardActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
@@ -139,10 +152,34 @@ public class VisitStorePointDashboardActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                NavigateIntent(MainActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 break;
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    boolean doubleBackToExitPressedOnce = false;
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.confirmOut), Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 3000);
     }
 }

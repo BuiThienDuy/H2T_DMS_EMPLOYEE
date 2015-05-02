@@ -270,7 +270,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_below="@+id/activity_store_detail_layout_title_trung_bay"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:gravity="center_vertical">
         <com.beardedhen.androidbootstrap.BootstrapButton
                 android:id="@+id/activity_store_detail_btn_trung_bay_quay_ke"
@@ -280,12 +280,14 @@
                 bootstrap:bb_type="primary"
                 bootstrap:bb_icon_left="fa-camera-retro"
                 bootstrap:bb_roundedCorners="true"/>
-        <TextView
+        <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
                 android:id="@+id/activity_store_detail_tv_total_image"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
+                android:singleLine="true"
                 android:text="@string/totalImageCapture"/>
     </LinearLayout>
 

@@ -8,9 +8,9 @@
         >
 
 
-    <TextView
+    <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:id="@+id/activity_login_iv_photo"
             android:layout_gravity="center_horizontal"
             android:text="@string/companyName"
@@ -18,7 +18,9 @@
             android:textColor="#FFFFFF"
             android:textSize="50sp"
             android:textStyle="bold"
+            android:singleLine="true"
             android:background="#4990CC"
+            android:padding="10dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"/>
 
@@ -30,8 +32,8 @@
             android:hint="@string/username"
             bootstrap:be_roundedCorners="true"
             bootstrap:be_state="default"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginTop="100dp"
             android:layout_marginBottom="20dp"
             android:layout_below="@+id/activity_login_iv_photo"
@@ -49,8 +51,8 @@
             android:layout_below="@+id/activity_login_et_tendangnhap"
             bootstrap:be_roundedCorners="true"
             bootstrap:be_state="default"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
             android:hint="@string/password"
             android:drawablePadding="10dp"
@@ -67,8 +69,8 @@
             bootstrap:bb_type="primary"
             bootstrap:bb_roundedCorners="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:textSize="20sp"
             />
 

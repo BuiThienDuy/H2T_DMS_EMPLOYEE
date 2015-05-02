@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -338,51 +339,55 @@ public class InvoiceNewActivity extends Activity {
     }
 
     private void CreateANewInvoice() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(InvoiceNewActivity.this);
-        dialog.setTitle(getString(R.string.createNewInvoice));
 
-        String message = generateResult() + "\n\n" + getString(R.string.confirmCreateNewInvoice);
+            AlertDialog.Builder dialog = new AlertDialog.Builder(InvoiceNewActivity.this);
+            dialog.setTitle(getString(R.string.createNewInvoice));
 
-        dialog.setMessage(message);
+            String message = generateResult() + "\n\n" + getString(R.string.confirmCreateNewInvoice);
 
-        dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final Invoice invoice = new Invoice();
-                invoice.setStoreId(storeId);
-                invoice.setEmployee(ParseUser.getCurrentUser());
-                invoice.setInvoiceStatus(Invoice.MOI_TAO);
-                invoice.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
-                invoice.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
+            dialog.setMessage(message);
 
-                ArrayList<ProductPurchase> productPurchaseList = (ArrayList<ProductPurchase>) getProductPurchaseList();
-                invoice.setProductPurchases(productPurchaseList);
+            dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final Invoice invoice = new Invoice();
+                    invoice.setStoreId(storeId);
+                    invoice.setEmployee(ParseUser.getCurrentUser());
+                    invoice.setInvoiceStatus(Invoice.MOI_TAO);
+                    invoice.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
+                    invoice.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
 
-                invoice.setInvoicePrice(totalPrice);
+                    ArrayList<ProductPurchase> productPurchaseList = (ArrayList<ProductPurchase>) getProductPurchaseList();
+                    invoice.setProductPurchases(productPurchaseList);
 
-                invoice.saveEventually();
+                    invoice.setInvoicePrice(totalPrice);
 
-                invoice.pinInBackground(DownloadUtils.PIN_INVOICE, new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Toast.makeText(InvoiceNewActivity.this, getString(R.string.createInvoiceSuccess), Toast
-                                    .LENGTH_SHORT).show();
-                            finish();
+                    invoice.saveEventually();
+
+                    invoice.pinInBackground(DownloadUtils.PIN_INVOICE, new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(InvoiceNewActivity.this, getString(R.string.createInvoiceSuccess), Toast
+                                        .LENGTH_SHORT).show();
+                                finish();
+                            }
                         }
-                    }
-                });
+                    });
 
-            }
-        });
+                }
+            });
 
-        dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
+            dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+        if(totalPrice != 0) {
+            dialog.show();
+        }
     }
+
+
 }
