@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.PopupAdapter;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.StoreDetailActivity;
@@ -47,6 +48,7 @@ public class VisitStorePointActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(getString(R.string.visitStorePointActivityTitle));
         setContentView(R.layout.activity_visit_store_point);
         InitializeComponent();
         SetupMap();
@@ -73,14 +75,14 @@ public class VisitStorePointActivity extends Activity {
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
                     intent.putExtra("EXTRAS_VIENG_THAM", true);
-                    intent.putExtra("EXTRAS_READ_ONLY", true);
+                    //intent.putExtra("EXTRAS_READ_ONLY", true);
 
-                    startActivity(intent);
+                    startActivityForResult(intent, MyApplication.REQUEST_EDIT);
                 } else {
                     Intent intent = new Intent(VisitStorePointActivity.this,StoreDetailActivity.class);
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
-                    startActivity(intent);
+                    startActivityForResult(intent, MyApplication.REQUEST_EDIT);
                 }
             }
         });
@@ -182,5 +184,12 @@ public class VisitStorePointActivity extends Activity {
             gpsTracker.showSettingsAlert();
         }
         map.setInfoWindowAdapter(new PopupAdapter(getLayoutInflater()));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        DrawStorePoint();
     }
 }

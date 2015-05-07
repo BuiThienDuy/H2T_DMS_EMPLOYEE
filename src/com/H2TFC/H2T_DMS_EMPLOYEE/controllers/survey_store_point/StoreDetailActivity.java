@@ -34,7 +34,7 @@ import java.util.Locale;
  * All rights reserved
  */
 public class StoreDetailActivity extends Activity {
-    BootstrapButton btnTrungBay, btnCapNhat, btnQuayVe;
+    BootstrapButton btnTrungBay, btnCapNhat, btnQuayVe, btnCapNhat2;
 
     BootstrapEditText etTenCuaHang, etTenChuCuaHang, etDiaChi, etSDT, etDoanhThu, etMatHangDoiThu;
 
@@ -74,7 +74,7 @@ public class StoreDetailActivity extends Activity {
 
         InitializeComponent();
         SetupEvent();
-
+        LoadImageCount();
             ParseQuery<StoreImage> storeImageParseQuery = StoreImage.getQuery();
             storeImageParseQuery.whereEqualTo("employee_id", ParseUser.getCurrentUser().getObjectId());
             storeImageParseQuery.findInBackground(new FindCallback<StoreImage>() {
@@ -83,18 +83,18 @@ public class StoreDetailActivity extends Activity {
                     if (e == null) {
                         ParseObject.unpinAllInBackground(DownloadUtils.PIN_STORE_IMAGE);
                         ParseObject.pinAllInBackground(DownloadUtils.PIN_STORE_IMAGE, list);
+                        LoadImageCount();
                     }
                 }
             });
 
-            DownloadUtils.DownloadParseStoreType(StoreDetailActivity.this,new SaveCallback() {
+            DownloadUtils.DownloadParseStoreType(StoreDetailActivity.this, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     GetAndShowStoreDetail();
 
                 }
             });
-
         GetAndShowStoreDetail();
 
 
@@ -258,6 +258,57 @@ public class StoreDetailActivity extends Activity {
             }
         });
 
+        btnCapNhat2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseQuery<Store> storeParseQuery = Store.getQuery();
+                storeParseQuery.fromPin(DownloadUtils.PIN_STORE);
+                storeParseQuery.whereEqualTo("objectId", storeID);
+                storeParseQuery.getFirstInBackground(new GetCallback<Store>() {
+                    @Override
+                    public void done(Store store, ParseException e) {
+                        //
+                        String tenCuaHang = etTenCuaHang.getText().toString();
+                        String tenChuCuaHang = etTenChuCuaHang.getText().toString();
+                        String diaChi = etDiaChi.getText().toString();
+                        String sdt = etSDT.getText().toString();
+                        String matHangDoiThuCanhTranh = etMatHangDoiThu.getText().toString();
+                        String sDoanhThu = etDoanhThu.getText().toString().replace(",", "").replace(".", "");
+
+
+                        String error_msg = ValidateInput();
+                        boolean error_existed = !error_msg.equals("");
+
+                        if (error_existed) {
+                            Toast.makeText(StoreDetailActivity.this, error_msg, Toast.LENGTH_LONG).show();
+                        } else {
+                            double doanhThu = Double.parseDouble(sDoanhThu);
+                            // Update store info
+                            store.setName(tenCuaHang);
+                            store.setStoreOwner(tenChuCuaHang);
+                            store.setAddress(diaChi);
+                            store.setIncome(doanhThu);
+                            store.setPhoneNumber(sdt);
+                            store.setCompetitor(matHangDoiThuCanhTranh);
+                            store.setStoreType(spnLoaiCuaHang.getSelectedItem().toString());
+                            // save
+                            store.saveEventually();
+
+                            // Pin in background
+                            store.pinInBackground(DownloadUtils.PIN_STORE, new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    Toast.makeText(StoreDetailActivity.this, getString(R.string.updateSuccess), Toast
+                                            .LENGTH_LONG).show();
+                                    finish();
+                                }
+                            });
+
+                        }
+                    }
+                });
+            }
+        });
 
         btnCapNhat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -407,6 +458,7 @@ public class StoreDetailActivity extends Activity {
         etCongNo = (BootstrapEditText) findViewById(R.id.activity_store_detail_et_cong_no);
         etCongNo.setEnabled(false);
 
+        btnCapNhat2 = (BootstrapButton) findViewById(R.id.activity_store_detail_btn_update2);
     }
 
     @Override
@@ -427,6 +479,9 @@ public class StoreDetailActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    private void LoadImageCount() {
         ParseQuery<StoreImage> imageQuery = StoreImage.getQuery();
         imageQuery.fromPin(DownloadUtils.PIN_STORE_IMAGE);
         imageQuery.whereEqualTo("store_id", store_image_id);
@@ -434,12 +489,24 @@ public class StoreDetailActivity extends Activity {
         ParseQuery<StoreImage> localImageQuery = StoreImage.getQuery();
         localImageQuery.fromPin("PIN_DRAFT_PHOTO");
         localImageQuery.whereEqualTo("store_id", storeID);
+
+        int imageCount = 0;
+        int localImageCount = 0;
+
         try {
-            int totalImage = imageQuery.count() + localImageQuery.count();
-            tvBucAnhDaChup.setText(totalImage + getString(R.string.captureImage));
+            imageCount = imageQuery.count();
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        try {
+            localImageCount = localImageQuery.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int totalImage = imageCount + localImageCount;
+        tvBucAnhDaChup.setText(totalImage + getString(R.string.captureImage));
     }
 
     private String ValidateInput() {

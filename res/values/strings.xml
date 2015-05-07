@@ -119,7 +119,7 @@
         . Vui lòng thử lại sau.</string>
     <string name="visiting">"đang viếng thăm"</string>
     <string name="descriptionStoreOwner">"-Chủ cửa hàng: "</string>
-    <string name="createNewInvoice">Tạo đơn hàng mới</string>
+    <string name="createNewInvoice">Lập đơn hàng</string>
     <string name="customerFeedBack">Phản hồi</string>
     <string name="debtStatus">Tình trạng công nợ</string>
     <string name="history">Lịch sử</string>
@@ -200,4 +200,6 @@
     <string name="invoiceDetailTitle">Chi tiết hóa đơn</string>
     <string name="invoiceTotalPrice">Tổng tiền:</string>
     <string name="invoiceSearchTitle">Tìm kiếm đơn hàng</string>
+    <string name="visitStorePointActivityTitle">Viếng thăm cửa hàng</string>
+    <string name="mainTitle">H2T DMS (Phiên bản dành cho NVKD)</string>
 </resources>

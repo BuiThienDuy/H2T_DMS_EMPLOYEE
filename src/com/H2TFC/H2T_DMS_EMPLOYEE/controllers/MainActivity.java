@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        setTitle(getString(R.string.mainTitle));
 
         int state = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 

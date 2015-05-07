@@ -320,7 +320,6 @@ public class SurveyStorePointActivity extends Activity {
                                             employeeName + getString(R.string.signContractWith) + store.getName() +
                                                     getString(R.string.success));
                                     DrawStorePoint();
-                                    DrawStorePoint();
                                 }
                             });
                         }
@@ -354,12 +353,13 @@ public class SurveyStorePointActivity extends Activity {
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
                     intent.putExtra("EXTRAS_READ_ONLY", true);
-                    startActivity(intent);
+
+                    startActivityForResult(intent, MyApplication.REQUEST_EDIT);
                 } else {
                     Intent intent = new Intent(SurveyStorePointActivity.this, StoreDetailActivity.class);
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
-                    startActivity(intent);
+                    startActivityForResult(intent,  MyApplication.REQUEST_ADD_NEW);
                 }
             }
         });
@@ -542,11 +542,6 @@ public class SurveyStorePointActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_OK) {
-            if(requestCode == MyApplication.REQUEST_ADD_NEW) {
-                DrawStorePoint();
-            }
-        }
         DrawStorePoint();
         DrawAreaCurrentManage();
     }
@@ -755,4 +750,6 @@ public class SurveyStorePointActivity extends Activity {
             }
         }, 2000);
     }
+
+
 }

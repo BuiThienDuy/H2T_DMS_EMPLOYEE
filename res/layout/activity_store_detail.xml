@@ -485,31 +485,47 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <com.beardedhen.androidbootstrap.BootstrapButton
+                            android:id="@+id/activity_store_detail_btn_update2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/update"
+                            bootstrap:bb_type="success"
+                            bootstrap:bb_roundedCorners="true"
+                            bootstrap:bb_icon_left="fa-edit"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginEnd="5dp"/>
+                            />
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
                             android:id="@+id/activity_store_detail_btn_invoice"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/createNewInvoice"
-                            bootstrap:bb_type="success"
+                            bootstrap:bb_type="primary"
                             bootstrap:bb_icon_left="fa-usd"
                             bootstrap:bb_roundedCorners="true"
-                            android:layout_marginRight="5dp"
-                            android:layout_marginEnd="5dp"/>
-                    <com.beardedhen.androidbootstrap.BootstrapButton
-                            android:id="@+id/activity_store_detail_btn_invoice_history"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/history"
-                            bootstrap:bb_type="warning"
-                            bootstrap:bb_roundedCorners="true"
-                            bootstrap:bb_icon_left="fa-history"
                             android:layout_marginLeft="5dp"
                             android:layout_marginStart="5dp"/>
+
             </LinearLayout>
         <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                        android:id="@+id/activity_store_detail_btn_invoice_history"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/history"
+                        bootstrap:bb_type="warning"
+                        bootstrap:bb_roundedCorners="true"
+                        bootstrap:bb_icon_left="fa-history"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="5dp"
+                        />
                 <com.beardedhen.androidbootstrap.BootstrapButton
                         android:id="@+id/activity_store_detail_btn_feed_back"
                         android:layout_width="0dp"
@@ -521,6 +537,8 @@
                         bootstrap:bb_icon_left="fa-comment-o"
                         android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"/>
+
+
         </LinearLayout>
 
     </LinearLayout>
