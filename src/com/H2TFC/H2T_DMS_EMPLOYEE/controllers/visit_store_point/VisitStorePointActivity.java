@@ -55,14 +55,13 @@ public class VisitStorePointActivity extends Activity {
             currentStoreId = getIntent().getStringExtra("EXTRAS_STORE_ID");
         }
 
-        if(ConnectUtils.hasConnectToInternet(VisitStorePointActivity.this)) {
-            DownloadUtils.DownloadParseStore(new SaveCallback() {
+            DownloadUtils.DownloadParseStore(VisitStorePointActivity.this,new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     DrawStorePoint();
                 }
             });
-        }
+
         DrawStorePoint();
 
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {

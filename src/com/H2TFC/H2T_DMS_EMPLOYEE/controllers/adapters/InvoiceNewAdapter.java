@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceNewActivity;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Promotion;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
@@ -34,8 +35,6 @@ import java.util.*;
  * All rights reserved
  */
 public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
-
-
     public InvoiceNewAdapter(Context context, QueryFactory<Product> queryFactory) {
         super(context, queryFactory);
     }
@@ -58,8 +57,6 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
             final Date currentDate = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-//            queryPromotion.whereGreaterThan("promotion_apply_from",currentDate);
-//            queryPromotion.whereLessThan("promotion_apply_to",currentDate);
             queryPromotion.whereMatchesQuery("promotion_product_gift", queryProduct);
             queryPromotion.fromPin(DownloadUtils.PIN_PROMOTION);
             final View finalV1 = v;
@@ -69,8 +66,6 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
                     if (e == null) {
                         for (final Promotion promotion : list) {
                             try {
-
-
                             if (currentDate.after(promotion.getPromotionApplyFrom()) && currentDate.before(promotion
                                     .getPromotionApplyTo())) {
                                 Button button = new Button(finalV1.getContext());
@@ -133,8 +128,6 @@ public class InvoiceNewAdapter extends ParseQueryAdapter<Product> {
                     }
                 }
             });
-        } else {
-
         }
         super.getItemView(object, v, parent);
         TextView tvName = (TextView) v.findViewById(R.id.list_product_tv_name);

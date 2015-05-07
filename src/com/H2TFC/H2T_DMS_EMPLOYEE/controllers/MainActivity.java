@@ -1,6 +1,7 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,8 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
 
@@ -32,27 +35,35 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        if(ConnectUtils.hasConnectToInternet(MainActivity.this)) {
-            DownloadUtils.DownloadParseStore(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
+        int state = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
-                }
-            });
-            DownloadUtils.DownloadParseStoreType(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
+        if (state == ConnectionResult.SUCCESS) {
 
-                }
-            });
-
-            DownloadUtils.DownloadParseProductPurchase(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-
-                }
-            });
+        } else {
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(state, this, -1);
+            dialog.show();
         }
+
+            DownloadUtils.DownloadParseStore(MainActivity.this,new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+
+                }
+            });
+            DownloadUtils.DownloadParseStoreType(MainActivity.this,new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+
+                }
+            });
+
+            DownloadUtils.DownloadParseProductPurchase(MainActivity.this,new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+
+                }
+            });
+
 
         btnViengTham = (BootstrapButton) findViewById(R.id.activity_main_btn_viengtham);
         btnKhaoSat = (BootstrapButton) findViewById(R.id.activity_main_btn_khaosat);

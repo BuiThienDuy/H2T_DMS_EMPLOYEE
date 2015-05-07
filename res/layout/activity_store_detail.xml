@@ -450,6 +450,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:layout_below="@id/activity_store_detail_layout_edit_cong_no">
+
         <com.beardedhen.androidbootstrap.BootstrapButton
                 android:id="@+id/activity_store_detail_btn_cap_nhat"
                 android:layout_width="0dp"
@@ -477,40 +478,51 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            android:orientation="vertical"
             android:layout_below="@id/activity_store_detail_layout_btn">
-        <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/activity_store_detail_btn_invoice"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/createNewInvoice"
-                bootstrap:bb_type="success"
-                bootstrap:bb_icon_left="fa-usd"
-                bootstrap:bb_roundedCorners="true"
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"/>
-        <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/activity_store_detail_btn_invoice_history"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/history"
-                bootstrap:bb_type="warning"
-                bootstrap:bb_roundedCorners="true"
-                bootstrap:bb_icon_left="fa-history"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"/>
-        <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/activity_store_detail_btn_feed_back"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/customerFeedBack"
-                bootstrap:bb_type="info"
-                bootstrap:bb_roundedCorners="true"
-                bootstrap:bb_icon_left="fa-comment-o"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"/>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                            android:id="@+id/activity_store_detail_btn_invoice"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/createNewInvoice"
+                            bootstrap:bb_type="success"
+                            bootstrap:bb_icon_left="fa-usd"
+                            bootstrap:bb_roundedCorners="true"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginEnd="5dp"/>
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                            android:id="@+id/activity_store_detail_btn_invoice_history"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/history"
+                            bootstrap:bb_type="warning"
+                            bootstrap:bb_roundedCorners="true"
+                            bootstrap:bb_icon_left="fa-history"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp"/>
+            </LinearLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                        android:id="@+id/activity_store_detail_btn_feed_back"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/customerFeedBack"
+                        bootstrap:bb_type="info"
+                        bootstrap:bb_roundedCorners="true"
+                        bootstrap:bb_icon_left="fa-comment-o"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 

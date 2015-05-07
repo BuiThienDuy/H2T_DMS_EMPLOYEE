@@ -1,9 +1,11 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -60,6 +62,19 @@ public class InvoiceHistoryActivity extends Activity {
 
         InitializeComponent();
         SetUpListView();
+
+        lvInvoice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position >= 0) {
+                    Invoice invoice = invoiceAdapter.getItem(position);
+
+                    Intent intent = new Intent(InvoiceHistoryActivity.this,InvoiceDetailActivity.class);
+                    intent.putExtra("EXTRAS_INVOICE_ID",invoice.getObjectId());
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private void SetUpListView() {

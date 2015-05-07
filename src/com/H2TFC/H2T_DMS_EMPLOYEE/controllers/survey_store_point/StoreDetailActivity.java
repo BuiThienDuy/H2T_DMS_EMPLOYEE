@@ -75,7 +75,6 @@ public class StoreDetailActivity extends Activity {
         InitializeComponent();
         SetupEvent();
 
-        if (ConnectUtils.hasConnectToInternet(StoreDetailActivity.this)) {
             ParseQuery<StoreImage> storeImageParseQuery = StoreImage.getQuery();
             storeImageParseQuery.whereEqualTo("employee_id", ParseUser.getCurrentUser().getObjectId());
             storeImageParseQuery.findInBackground(new FindCallback<StoreImage>() {
@@ -88,14 +87,14 @@ public class StoreDetailActivity extends Activity {
                 }
             });
 
-            DownloadUtils.DownloadParseStoreType(new SaveCallback() {
+            DownloadUtils.DownloadParseStoreType(StoreDetailActivity.this,new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     GetAndShowStoreDetail();
 
                 }
             });
-        }
+
         GetAndShowStoreDetail();
 
 

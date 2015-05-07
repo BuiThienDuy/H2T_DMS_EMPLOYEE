@@ -12,6 +12,7 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.parse.*;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -66,11 +67,16 @@ public class InvoiceAdapter extends ParseQueryAdapter<Invoice> {
 
         TextView tvDateOrder = (TextView) v.findViewById(R.id.list_invoice_tv_date_order);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        tvDateOrder.setText(v.getContext().getString(R.string.invoiceCreateDate)+ ": " + dateFormat.format(object
+        tvDateOrder.setText(v.getContext().getString(R.string.invoiceCreateDate) + ": " + dateFormat.format(object
                 .getCreatedAt()));
 
         LinearLayout llProduct = (LinearLayout) v.findViewById(R.id.list_invoice_ll_product);
         llProduct.setBackgroundColor(Invoice.getStatusColor(object.getInvoiceStatus()));
+
+        TextView tvPrice = (TextView) v.findViewById(R.id.list_invoice_tv_price);
+        tvPrice.setText(v.getContext().getString(R.string.invoiceTotalPrice) + ": " + String.format(Locale.CHINESE,
+                "%1$,.0f", object.getInvoicePrice()) + " " + v.getContext().getString(R.string
+                .VND));
 
         return v;
     }

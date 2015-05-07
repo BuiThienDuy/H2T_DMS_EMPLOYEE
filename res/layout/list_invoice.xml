@@ -31,6 +31,7 @@
                     android:text="@string/invoice"
                     style="?android:textAppearanceLarge"
                     android:textColor="#27657E"
+                    android:singleLine="true"
                     android:textStyle="bold"/>
 
             <RelativeLayout
@@ -45,8 +46,16 @@
                         android:textSize="16sp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
+                        android:singleLine="true"
                         android:text="@string/invoiceOwner"/>
             </RelativeLayout>
+
+            <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
+                    android:id="@+id/list_invoice_tv_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@string/invoiceTotalPrice"/>
 
             <TextView
                     android:id="@+id/list_invoice_tv_status"

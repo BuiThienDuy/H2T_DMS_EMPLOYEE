@@ -192,4 +192,12 @@
         hồi lên nhân viên quản lý để được gia hạn công nợ.</string>
     <string name="confirmOut">Nhấn nút \'quay về\' lần nữa để thoát ứng dụng</string>
     <string name="areYouSureYouWantToEndSession">Bạn có chắc là bạn muốn kết thúc phiên làm việc này không?</string>
+    <string name="pleaseInstallGooglePlayServices">Vui lòng cài đặt Google Play Services hoặc kích hoạt tính năng này lên trên thiết bị cầm tay của bạn</string>
+    <string name="googlePlayServicesNotFound">Không thể mở được Google Play Services</string>
+    <string name="employeeMadeInvoice">Nhân viên đặt hàng:</string>
+    <string name="customer">Khách hàng:</string>
+    <string name="totalInvoicePrice">Tổng tiền hóa đơn:</string>
+    <string name="invoiceDetailTitle">Chi tiết hóa đơn</string>
+    <string name="invoiceTotalPrice">Tổng tiền:</string>
+    <string name="invoiceSearchTitle">Tìm kiếm đơn hàng</string>
 </resources>

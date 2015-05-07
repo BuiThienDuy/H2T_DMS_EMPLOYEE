@@ -48,6 +48,7 @@
             android:theme="@android:style/Theme.Holo.Light"
             android:allowBackup="true"
             >
+        <uses-library android:name="com.google.android.maps" />
         <!-- push notification -->
         <service android:name="com.parse.PushService" />
         <receiver android:name="com.parse.ParseBroadcastReceiver">
@@ -105,6 +106,8 @@
         <activity android:name=".controllers.visit_store_point.VisitStorePointActivity"/>
         <activity android:name=".controllers.invoice.InvoiceHistoryActivity"/>
         <activity android:name=".controllers.view_report.ViewReportActivity"/>
+        <activity android:name=".controllers.invoice.InvoiceDetailActivity"/>
+        <activity android:name=".controllers.invoice.InvoiceSearchActivity"/>
 
         <!-- replace @drawable/push_icon with your push icon identifier -->
         <meta-data android:name="com.parse.push.notification_icon" android:resource="@drawable/ic_notification"/>

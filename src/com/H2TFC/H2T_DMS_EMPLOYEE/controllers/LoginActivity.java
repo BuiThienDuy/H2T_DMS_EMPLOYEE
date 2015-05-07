@@ -48,14 +48,13 @@ public class LoginActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.signIn));
 
-        if (ConnectUtils.hasConnectToInternet(LoginActivity.this)) {
-            DownloadUtils.DownloadParseEmployee(new SaveCallback() {
+            DownloadUtils.DownloadParseEmployee(LoginActivity.this,new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
 
                 }
             });
-        }
+
 
         InitializeComponent();
 
@@ -185,7 +184,7 @@ public class LoginActivity extends Activity {
         if (requestCode == MyApplication.REQUEST_TAKE_PHOTO) {
             isKhaoSat = false;
             hasImage = true;
-                if (!data.hasExtra("data")) {
+                if (data == null || !data.hasExtra("data")) {
                     finish();
                 } else {
                     Bitmap bm = (Bitmap) data.getExtras().get("data");

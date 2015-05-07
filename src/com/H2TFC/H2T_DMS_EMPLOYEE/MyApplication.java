@@ -20,6 +20,7 @@ public class MyApplication extends Application {
     public static final int REQUEST_DELETE = 300;
     public static final int REQUEST_TAKE_PHOTO = 400;
     public static final int REQUEST_CHOOSE_PHOTO = 401;
+    public static final int REQUEST_SEARCH = 500;
 
     @Override
     public void onCreate() {

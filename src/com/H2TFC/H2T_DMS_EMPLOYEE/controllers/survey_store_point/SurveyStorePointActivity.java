@@ -2,9 +2,12 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -28,11 +31,14 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Area;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.*;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.ui.IconGenerator;
 import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView;
+import com.mobisys.android.autocompletetextviewcomponent.SelectionListener;
 import com.parse.*;
 
 import java.util.ArrayList;
@@ -81,48 +87,57 @@ public class SurveyStorePointActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_khaosat);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.surveyStorePointTitle));
 
-        mapPolygon = new HashMap<Polygon, Area>();
-        mapPolyline = new HashMap<Polyline, Area>();
-        tvSearchMap = (ClearableAutoTextView) findViewById(R.id.activity_khaosat_tv_search);
+            setContentView(R.layout.activity_khaosat);
+            InitializeComponent();
+            SetupMap();
+            SetupEvent();
 
-        InitializeComponent();
-        SetupMap();
-        SetupEvent();
+                DownloadUtils.DownloadParseArea(SurveyStorePointActivity.this,new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        DrawAreaCurrentManage();
+                    }
+                });
+                DownloadUtils.DownloadParseStore(SurveyStorePointActivity.this,new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        DrawStorePoint();
+                    }
+                });
+                DownloadUtils.DownloadParseStoreImage(SurveyStorePointActivity.this,new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
 
-        if(ConnectUtils.hasConnectToInternet(SurveyStorePointActivity.this)) {
-            DownloadUtils.DownloadParseArea(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    DrawAreaCurrentManage();
-                }
-            });
-            DownloadUtils.DownloadParseStore(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    DrawStorePoint();
-                }
-            });
-            DownloadUtils.DownloadParseStoreImage(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
+                    }
+                });
+                DownloadUtils.DownloadParseStoreType(SurveyStorePointActivity.this,new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
 
-                }
-            });
-            DownloadUtils.DownloadParseStoreType(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
+                    }
+                });
+                DrawStorePoint();
+                DrawAreaCurrentManage();
 
-                }
-            });
-        } else {
-            DrawStorePoint();
-            DrawAreaCurrentManage();
+
+
+    }
+
+    public boolean isGoogleMapsInstalled()
+    {
+        try
+        {
+            ApplicationInfo info = getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0 );
+            return true;
         }
-
+        catch(PackageManager.NameNotFoundException e)
+        {
+            return false;
+        }
     }
 
     @Override
@@ -143,13 +158,16 @@ public class SurveyStorePointActivity extends Activity {
     public void InitializeComponent() {
         // Map
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.activity_khaosat_map)).getMap();
+        // Textview
+        tvSearchMap = (ClearableAutoTextView) findViewById(R.id.activity_khaosat_tv_search);
 
         // Image view
         ivCrosshair = (ImageView) findViewById(R.id.activity_khaosat_iv_crosshair);
 
         // Other
         myMapMarker = new HashMap<Marker, Store>();
-
+        mapPolygon = new HashMap<Polygon, Area>();
+        mapPolyline = new HashMap<Polyline, Area>();
     }
 
     public void SetupMap() {
@@ -160,32 +178,26 @@ public class SurveyStorePointActivity extends Activity {
             e.printStackTrace();
         }
 
-        // Setting up the button that show on the map
-        map.getUiSettings().setMyLocationButtonEnabled(true);
-        map.getUiSettings().setMapToolbarEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.setMyLocationEnabled(true);
-
         // Zooming camera to position user
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
+            GPSTracker gpsTracker = new GPSTracker(this);
 
-        GPSTracker gpsTracker = new GPSTracker(this);
+            if (gpsTracker.canGetLocation() && map != null) {
+                Location location = gpsTracker.getLocation();
 
-        if (gpsTracker.canGetLocation())
-        {
-            Location location = gpsTracker.getLocation();
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
+                        .zoom(17)                                                                 // Sets the zoom
+                        .build();                                                                 // Creates a CameraPosition from the builder
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                // Setting up the button that show on the map
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                map.getUiSettings().setMapToolbarEnabled(true);
+                map.getUiSettings().setZoomControlsEnabled(true);
+                map.setMyLocationEnabled(true);
+            } else {
+                gpsTracker.showSettingsAlert();
+            }
 
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                    .zoom(17)                                                                 // Sets the zoom
-                    .build();                                                                 // Creates a CameraPosition from the builder
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        } else {
-            gpsTracker.showSettingsAlert();
-        }
     }
 
     public void SetupEvent() {
@@ -289,7 +301,7 @@ public class SurveyStorePointActivity extends Activity {
             public void onInfoWindowClick(Marker marker) {
 
                 final Store store = myMapMarker.get(marker);
-                if(store.getStatus().equals(Store.StoreStatus.TIEM_NANG.name())) {
+                if (store.getStatus().equals(Store.StoreStatus.TIEM_NANG.name())) {
                     marker.setSnippet(getString(R.string.clickToChangeToStorePoint));
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(SurveyStorePointActivity.this);
                     alertDialog.setMessage(getString(R.string.confirmChangeToStorePoint));
@@ -305,8 +317,8 @@ public class SurveyStorePointActivity extends Activity {
                                     // Send push notification to NVQL
                                     String employeeName = (String) ParseUser.getCurrentUser().get("name");
                                     CustomPushUtils.sendMessageToEmployee(ParseUser.getCurrentUser().getString("manager_id"),
-                                            employeeName + getString(R.string.signContractWith) + store.getName()  +
-                                                    getString(R.string.success) );
+                                            employeeName + getString(R.string.signContractWith) + store.getName() +
+                                                    getString(R.string.success));
                                     DrawStorePoint();
                                     DrawStorePoint();
                                 }
@@ -324,7 +336,7 @@ public class SurveyStorePointActivity extends Activity {
                                     // Send push notification to NVQL
                                     String employeeName = (String) ParseUser.getCurrentUser().get("name");
                                     CustomPushUtils.sendMessageToEmployee(ParseUser.getCurrentUser().getString("manager_id"),
-                                            employeeName + getString(R.string.signContractWith) + store.getName() + getString(R.string.failed) );
+                                            employeeName + getString(R.string.signContractWith) + store.getName() + getString(R.string.failed));
                                     DrawStorePoint();
                                 }
                             });
@@ -337,14 +349,14 @@ public class SurveyStorePointActivity extends Activity {
                         }
                     });
                     alertDialog.show();
-                } else if(store.getStatus().equals(Store.StoreStatus.BAN_HANG.name())) {
-                    Intent intent = new Intent(SurveyStorePointActivity.this,StoreDetailActivity.class);
+                } else if (store.getStatus().equals(Store.StoreStatus.BAN_HANG.name())) {
+                    Intent intent = new Intent(SurveyStorePointActivity.this, StoreDetailActivity.class);
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
                     intent.putExtra("EXTRAS_READ_ONLY", true);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(SurveyStorePointActivity.this,StoreDetailActivity.class);
+                    Intent intent = new Intent(SurveyStorePointActivity.this, StoreDetailActivity.class);
                     intent.putExtra("EXTRAS_STORE_ID", store.getObjectId());
                     intent.putExtra("EXTRAS_STORE_IMAGE_ID", store.getStoreImageId());
                     startActivity(intent);
@@ -352,7 +364,26 @@ public class SurveyStorePointActivity extends Activity {
             }
         });
 
+        tvSearchMap.setSelectionListener(new SelectionListener() {
+            @Override
+            public void onItemSelection(ClearableAutoTextView.DisplayStringInterface selectedItem) {
 
+            }
+
+            @Override
+            public void onReceiveLocationInformation(double lat, double lng) {
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(lat, lng), 13));
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(lat, lng))      // Sets the center of the map to location user
+                        .zoom(17)                   // Sets the zoom
+                                //.bearing(90)                // Sets the orientation of the camera to east
+                                //.tilt(40)                   // Sets the tilt of the camera to 30 degrees
+                        .build();                   // Creates a CameraPosition from the builder
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
     }
 
     public boolean pointInPolygon(LatLng point, Polygon polygon) {

@@ -39,5 +39,4 @@
             android:background="#FFFFFF"
             custom:google_places_api_key="AIzaSyAa68eeKmP-tWJfX-OuPc-GI9yJfwRO1Ew"
             />
-
 </RelativeLayout>
