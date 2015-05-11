@@ -39,6 +39,9 @@ public class MyApplication extends Application {
         ParseObject.registerSubclass(Attendance.class);
         ParseObject.registerSubclass(ProductPurchase.class);
 
+        // Enable Crash Reporting
+        ParseCrashReporting.enable(this);
+
         // Parse local data store
         Parse.enableLocalDatastore(this);
 

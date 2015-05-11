@@ -404,6 +404,7 @@ public class StoreDetailActivity extends Activity {
                                 dialog.dismiss();
                             }
                         });
+                        dialog.show();
                     }
                     if(invoiceAllow == 2) {
                         AlertDialog.Builder dialog = new AlertDialog.Builder(StoreDetailActivity.this);
@@ -415,6 +416,7 @@ public class StoreDetailActivity extends Activity {
                                 dialog.dismiss();
                             }
                         });
+                        dialog.show();
                     }
             }
         });

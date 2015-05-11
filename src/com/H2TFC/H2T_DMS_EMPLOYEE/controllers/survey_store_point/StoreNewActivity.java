@@ -2,6 +2,7 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.CustomPushUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
@@ -20,7 +22,9 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreType;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.*;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +43,7 @@ public class StoreNewActivity extends Activity {
     Spinner spnLoaiCuaHang;
     TextView tvNgayTao,tvBucAnhDaChup;
     LatLng storeLocation;
+    List<StoreType> storeTypeList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,8 @@ public class StoreNewActivity extends Activity {
         if(getIntent().hasExtra("Lat") && getIntent().hasExtra("Lng")) {
             storeLocation = new LatLng(getIntent().getDoubleExtra("Lat",0),getIntent().getDoubleExtra("Lng",0));
         }
+
+        storeTypeList = new ArrayList<StoreType>();
 
         InitializeComponent();
         SetupEvent();
@@ -73,7 +80,7 @@ public class StoreNewActivity extends Activity {
                     Toast.makeText(StoreNewActivity.this,error_msg,Toast.LENGTH_LONG).show();
                 } else {
                     double doanhThu = Double.parseDouble(etDoanhThu.getText().toString());
-                    Store store = new Store();
+                    final Store store = new Store();
                     store.setName(tenCuaHang);
                     store.setStoreOwner(tenChuCuaHang);
                     store.setAddress(diaChi);
@@ -84,33 +91,64 @@ public class StoreNewActivity extends Activity {
                     store.setStatus(Store.StoreStatus.KHAO_SAT.name());
                     store.setStoreType(spnLoaiCuaHang.getSelectedItem().toString());
 
+                    for(StoreType storeType : storeTypeList) {
+                        if(storeType.getStoreTypeName().equals(spnLoaiCuaHang.getSelectedItem().toString())) {
+                            store.setMaxDebt(storeType.getDefaultDebt());
+                        }
+                    }
+
+
                     final String uuid = UUID.randomUUID().toString();
                     store.setStoreImageId(uuid);
                     if (storeLocation != null) {
                         store.setLocationPoint(new ParseGeoPoint(storeLocation.latitude, storeLocation.longitude));
                     }
-                    ParseQuery<StoreImage> queryStore = StoreImage.getQuery();
-                    queryStore.fromPin("PIN_DRAFT_PHOTO");
-                    queryStore.findInBackground(new FindCallback<StoreImage>() {
-                        @Override
-                        public void done(List<StoreImage> list, ParseException e) {
-                            if (e == null) {
-                                for (StoreImage storeImage : list) {
-                                    storeImage.setStoreId(uuid);
-                                    storeImage.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
-                                    storeImage.saveEventually();
-                                    storeImage.pinInBackground(DownloadUtils.PIN_STORE_IMAGE);
-                                }
-                            } else {
-                                Log.d("StoreNewActivity", getString(R.string.errorAddStorePoint));
-                            }
-                        }
-                    });
+
                     store.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
 
                     // Get store image from pin
                     // save
-                    store.saveEventually();
+                    store.saveEventually(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            ParseQuery<StoreImage> queryStore = StoreImage.getQuery();
+                            queryStore.whereEqualTo("photo_synched",false);
+                            queryStore.fromPin("PIN_DRAFT_PHOTO");
+                            queryStore.findInBackground(new FindCallback<StoreImage>() {
+                                @Override
+                                public void done(List<StoreImage> list, ParseException e) {
+                                    if (e == null) {
+                                        Log.e("storeImage","Save eventually size = " + list.size());
+                                        for (final StoreImage storeImage : list) {
+                                            Bitmap photoOnSdCard = ImageUtils.getPhotoSaved(storeImage.getPhotoTitle
+                                                    ());
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            photoOnSdCard.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                            byte[] bitmapdata = stream.toByteArray();
+
+                                            storeImage.setStoreId(store.getStoreImageId());
+                                            storeImage.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
+
+                                            final ParseFile photo = new ParseFile("parse_photo.png", bitmapdata);
+                                            photo.saveInBackground(new SaveCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    if (e == null) {
+                                                        storeImage.setPhoto(photo);
+                                                        storeImage.setPhotoSynched(true);
+                                                        storeImage.saveEventually();
+                                                        storeImage.pinInBackground(DownloadUtils.PIN_STORE_IMAGE);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        Log.d("StoreNewActivity", getString(R.string.errorAddStorePoint));
+                                    }
+                                }
+                            });
+                        }
+                    });
 
                     store.pinInBackground(DownloadUtils.PIN_STORE, new SaveCallback() {
                         @Override
@@ -222,6 +260,7 @@ public class StoreNewActivity extends Activity {
         storeTypeParseQuery.fromPin(DownloadUtils.PIN_STORE_TYPE);
         try {
             List<StoreType> storeTypeList = storeTypeParseQuery.find();
+            this.storeTypeList = storeTypeList;
             String[] items = new String[storeTypeList.size()];
             for(int i = 0 ; i < storeTypeList.size(); i++) {
                 items[i] = storeTypeList.get(i).getStoreTypeName();
@@ -254,6 +293,7 @@ public class StoreNewActivity extends Activity {
         if(resultCode == RESULT_OK) {
             if(requestCode == MyApplication.REQUEST_ADD_NEW) {
                 ParseQuery<StoreImage> queryStore = StoreImage.getQuery();
+                queryStore.whereEqualTo("photo_synched", false);
                 queryStore.fromPin("PIN_DRAFT_PHOTO");
                 try {
                     tvBucAnhDaChup.setText(queryStore.count() + getString(R.string.captureImage));
@@ -283,16 +323,18 @@ public class StoreNewActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ParseObject.unpinAllInBackground("PIN_DRAFT_PHOTO", new DeleteCallback() {
+        ParseQuery<StoreImage> query = StoreImage.getQuery();
+        query.whereEqualTo("photo_synched", true);
+        query.fromPin("PIN_DRAFT_PHOTO");
+        query.findInBackground(new FindCallback<StoreImage>() {
             @Override
-            public void done(ParseException e) {
-                if(e == null) {
-
-                } else {
-
+            public void done(List<StoreImage> list, ParseException e) {
+                for (StoreImage storeImage : list) {
+                    storeImage.unpinInBackground("PIN_DRAFT_PHOTO");
                 }
             }
         });
+
     }
 
     @Override

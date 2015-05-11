@@ -3,13 +3,18 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.*;
 import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.ViewImageFullScreen;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.parse.*;
+
+import java.io.ByteArrayOutputStream;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -36,6 +41,11 @@ public class TrungBayAdapter extends ParseQueryAdapter<StoreImage> {
 
         final ParseImageView storePhoto = (ParseImageView) v.findViewById(R.id.item_list_trungbay_iv_photo);
         ParseFile photoFile = object.getPhoto();
+        String photoTitle = object.getPhotoTitle();
+
+        if(photoTitle == null) {
+            photoTitle = "";
+        }
 
         storePhoto.setPlaceholder(v.getContext().getResources().getDrawable(R.drawable.ic_action_picture) );
 
@@ -55,6 +65,12 @@ public class TrungBayAdapter extends ParseQueryAdapter<StoreImage> {
                     });
                 }
             });
+        } else {
+            Log.e("photoTitle",photoTitle);
+            if(photoTitle.trim().length() > 0) {
+                Bitmap bm = ImageUtils.getPhotoSaved(photoTitle);
+                storePhoto.setImageBitmap(bm);
+            }
         }
 
         return v;

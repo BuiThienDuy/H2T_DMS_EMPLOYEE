@@ -4,10 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ThumbnailUtils;
+import android.os.Environment;
+import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
-import java.io.InputStream;
+import java.io.*;
+import java.util.Random;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -190,5 +191,36 @@ public class ImageUtils {
         }
 
         return inSampleSize;
+    }
+
+    public static void SaveImage(Bitmap finalBitmap,String name) {
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/saved_images");
+        myDir.mkdirs();
+        String fname = "Image-"+ name +".jpg";
+        File file = new File(myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Bitmap getPhotoSaved(String name) {
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/saved_images");
+        myDir.mkdirs();
+        String fname = "Image-"+ name +".jpg";
+        File file = new File(myDir, fname);
+        Bitmap bmp = null;
+        try {
+            bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
+        } catch(Exception ex) {}
+        return bmp;
     }
 }

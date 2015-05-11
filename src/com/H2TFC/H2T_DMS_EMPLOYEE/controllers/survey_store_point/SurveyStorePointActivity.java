@@ -30,6 +30,7 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.LoginActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Area;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -145,11 +146,14 @@ public class SurveyStorePointActivity extends Activity {
         super.onStart();
 
         // Unpinning the photo draft file the have cache from previous working session
-        ParseObject.unpinAllInBackground("PIN_DRAFT_PHOTO", new DeleteCallback() {
+        ParseQuery<StoreImage> query = StoreImage.getQuery();
+        query.whereEqualTo("photo_synched", true);
+        query.fromPin("PIN_DRAFT_PHOTO");
+        query.findInBackground(new FindCallback<StoreImage>() {
             @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.d("KhaoSatActivity","Can't unpin PIN_DRAFT_PHOTO");
+            public void done(List<StoreImage> list, ParseException e) {
+                for (StoreImage storeImage : list) {
+                    storeImage.unpinInBackground("PIN_DRAFT_PHOTO");
                 }
             }
         });
@@ -183,6 +187,7 @@ public class SurveyStorePointActivity extends Activity {
 
             if (gpsTracker.canGetLocation() && map != null) {
                 Location location = gpsTracker.getLocation();
+
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user

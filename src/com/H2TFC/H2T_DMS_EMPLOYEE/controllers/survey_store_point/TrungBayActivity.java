@@ -15,10 +15,12 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.TrungBayAdapter;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.parse.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.UUID;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -131,49 +133,42 @@ public class TrungBayActivity extends Activity {
         if(resultCode == RESULT_OK) {
             if(requestCode == MyApplication.REQUEST_ADD_NEW && data != null) {
                 Bitmap bm = (Bitmap) data.getExtras().get("data");
+                String uuid = UUID.randomUUID().toString();
+                ImageUtils.SaveImage(bm,"storeimage-" + uuid);
 
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] bitmapdata = stream.toByteArray();
+                StoreImage storeImage = new StoreImage();
+                storeImage.setName("");
+                storeImage.setPhotoSynched(false);
+                storeImage.setPhotoTitle("storeimage-" + uuid);
 
-                final ParseFile photo = new ParseFile("parse_photo.png", bitmapdata);
-                photo.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if(e == null) {
-                            StoreImage storeImage = new StoreImage();
-                            storeImage.setName("");
-                            storeImage.setPhoto(photo);
-
-                            if(store_id != null) {
-                                storeImage.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
-                                storeImage.setStoreId(store_image_id);
-                                storeImage.pinInBackground(DownloadUtils.PIN_STORE_IMAGE, new SaveCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        storeImageAdapter.loadObjects();
-                                        storeImageAdapter.notifyDataSetChanged();
-                                        gv_StoreImage.invalidateViews();
-                                    }
-                                });
-                                storeImage.saveEventually();
+                if(store_id != null) {
+                    storeImage.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
+                    storeImage.setStoreId(store_image_id);
+                    storeImage.pinInBackground(DownloadUtils.PIN_STORE_IMAGE, new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            storeImageAdapter.loadObjects();
+                            storeImageAdapter.notifyDataSetChanged();
+                            gv_StoreImage.invalidateViews();
+                        }
+                    });
+                    storeImage.saveEventually();
+                } else {
+                    storeImage.pinInBackground("PIN_DRAFT_PHOTO", new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                storeImageAdapter.loadObjects();
+                                storeImageAdapter.notifyDataSetChanged();
+                                gv_StoreImage.invalidateViews();
                             } else {
-                                storeImage.pinInBackground("PIN_DRAFT_PHOTO", new SaveCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        if (e == null) {
-                                            storeImageAdapter.loadObjects();
-                                            storeImageAdapter.notifyDataSetChanged();
-                                            gv_StoreImage.invalidateViews();
-                                        } else {
-                                            Log.d("TrungBayActivity", e.getMessage());
-                                        }
-                                    }
-                                });
+                                Log.d("TrungBayActivity", e.getMessage());
                             }
                         }
-                    }
-                });
+                    });
+                }
+
+
 
             }
             if(requestCode == MyApplication.REQUEST_DELETE) {

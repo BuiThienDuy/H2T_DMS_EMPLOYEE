@@ -21,12 +21,14 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.GPSTracker;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.parse.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.UUID;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC
@@ -48,12 +50,12 @@ public class LoginActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.signIn));
 
-            DownloadUtils.DownloadParseEmployee(LoginActivity.this,new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
+        DownloadUtils.DownloadParseEmployee(LoginActivity.this, new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
 
-                }
-            });
+            }
+        });
 
 
         InitializeComponent();
@@ -162,7 +164,7 @@ public class LoginActivity extends Activity {
                                 }
                             } else {
                                 progressDialog.dismiss();
-                                Toast.makeText(LoginActivity.this, getString(R.string.userOrPasswordIncorrect) , Toast
+                                Toast.makeText(LoginActivity.this, getString(R.string.userOrPasswordIncorrect), Toast
                                         .LENGTH_LONG).show();
                             }
                         }
@@ -184,173 +186,161 @@ public class LoginActivity extends Activity {
         if (requestCode == MyApplication.REQUEST_TAKE_PHOTO) {
             isKhaoSat = false;
             hasImage = true;
-                if (data == null || !data.hasExtra("data")) {
-                    finish();
-                } else {
-                    Bitmap bm = (Bitmap) data.getExtras().get("data");
-
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte[] bitmapdata = stream.toByteArray();
-
-                    // check if GPS enabled
-                    GPSTracker gpsTracker = new GPSTracker(this);
-
-                    if (gpsTracker.canGetLocation()) {
-                         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-                        progressDialog.setTitle(getString(R.string.pleaseWaitTitle));
-                        progressDialog.setMessage(getString(R.string.loadingPleaseWait));
-                        progressDialog.setCancelable(false);
-                        progressDialog.show();
-
-                        double Latitude = gpsTracker.getLatitude();
-                        double Longitude = gpsTracker.getLongitude();
-                        final Attendance attendance = new Attendance();
-                        attendance.setLocation(new ParseGeoPoint(Latitude, Longitude));
+            if (data == null || !data.hasExtra("data")) {
+                finish();
+            } else {
+                // Save the image to external store card
+                Bitmap bm = (Bitmap) data.getExtras().get("data");
+                String uuid = UUID.randomUUID().toString();
+                ImageUtils.SaveImage(bm, uuid);
 
 
-                        if (ParseUser.getCurrentUser() != null) {
-                            attendance.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
-                            attendance.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
-                        }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] bitmapdata = stream.toByteArray();
 
+                // check if GPS enabled
+                GPSTracker gpsTracker = new GPSTracker(this);
 
-                        final ParseFile photo = new ParseFile("parse_photo.png", bitmapdata);
-                        photo.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    attendance.setPhoto(photo);
-                                    // Get store id
-                                    ParseQuery<Store> storeParseQuery = Store.getQuery();
-                                    if (ParseUser.getCurrentUser() != null) {
-                                        storeParseQuery.whereEqualTo("employee_id", ParseUser.getCurrentUser().getObjectId());
-                                    }
-                                    storeParseQuery.whereEqualTo("status", Store.StoreStatus.BAN_HANG.name());
-                                    storeParseQuery.whereWithinKilometers("location_point", attendance.getLocation(), 0.3); // 300 met
-                                    storeParseQuery.fromPin(DownloadUtils.PIN_STORE);
+                if (gpsTracker.canGetLocation()) {
+                    final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
+                    progressDialog.setTitle(getString(R.string.pleaseWaitTitle));
+                    progressDialog.setMessage(getString(R.string.loadingPleaseWait));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
 
-                                    storeParseQuery.findInBackground(new FindCallback<Store>() {
+                    double Latitude = gpsTracker.getLatitude();
+                    double Longitude = gpsTracker.getLongitude();
+                    final Attendance attendance = new Attendance();
+
+                    attendance.setLocation(new ParseGeoPoint(Latitude, Longitude));
+                    attendance.setPhotoTitle(uuid);
+                    attendance.setPhotoSynched(false);
+
+                    if (ParseUser.getCurrentUser() != null) {
+                        attendance.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
+                        attendance.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
+                    }
+
+                    ParseQuery<Store> storeParseQuery = Store.getQuery();
+                    if (ParseUser.getCurrentUser() != null) {
+                        storeParseQuery.whereEqualTo("employee_id", ParseUser.getCurrentUser().getObjectId());
+                    }
+                    storeParseQuery.whereEqualTo("status", Store.StoreStatus.BAN_HANG.name());
+                    storeParseQuery.whereWithinKilometers("location_point", attendance.getLocation(), 0.3); // 300 met
+                    storeParseQuery.fromPin(DownloadUtils.PIN_STORE);
+
+                    storeParseQuery.findInBackground(new FindCallback<Store>() {
+                        @Override
+                        public void done(List<Store> list, ParseException e) {
+                            if (e == null) {
+                                //
+                                if (list.size() == 1) {
+                                    attendance.setStoreId(list.get(0).getObjectId());
+                                    employeeStoreId = list.get(0).getObjectId();
+                                    attendance.pinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT", new SaveCallback() {
                                         @Override
-                                        public void done(List<Store> list, ParseException e) {
-                                            if (e == null) {
-                                                //
-                                                if (list.size() == 1) {
-                                                    attendance.setStoreId(list.get(0).getObjectId());
-                                                    employeeStoreId = list.get(0).getObjectId();
-                                                    attendance.pinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT", new SaveCallback() {
-                                                        @Override
-                                                        public void done(ParseException ex) {
-                                                            if (ex == null) {
-                                                                progressDialog.dismiss();
-                                                                if(ParseUser.getCurrentUser() != null) {
-                                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
-                                                                    intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
-                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                                    startActivity(intent);
-                                                                }
-
-                                                            } else {
-                                                                progressDialog.dismiss();
-                                                            }
-                                                        }
-                                                    });
-                                                    return;
+                                        public void done(ParseException ex) {
+                                            if (ex == null) {
+                                                progressDialog.dismiss();
+                                                if (ParseUser.getCurrentUser() != null) {
+                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                                    intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent);
                                                 }
-                                                //
-                                                if (list.size() > 1) {
-                                                    final CharSequence[] items = new CharSequence[list.size()];
-                                                    final CharSequence[] items_id = new CharSequence[list.size()];
-                                                    for (int i = 0; i < items.length; i++) {
-                                                        items[i] = list.get(i).getName() + " - " + list.get(i).getAddress();
-                                                        items_id[i] = list.get(i).getObjectId();
-                                                    }
 
-                                                    progressDialog.dismiss();
-
-                                                    AlertDialog.Builder builder = new AlertDialog.Builder
-                                                            (LoginActivity.this);
-                                                    builder.setTitle(getString(R.string.pleaseSelectAtLeastOneStoreBelow));
-                                                    builder.setItems(items, new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int item) {
-                                                            // Do something with the selection
-                                                            String storeIdSelected = items_id[item].toString();
-                                                            attendance.setStoreId(storeIdSelected);
-                                                            employeeStoreId = storeIdSelected;
-                                                            attendance.pinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT", new
-                                                                    SaveCallback() {
-                                                                        @Override
-                                                                        public void done(ParseException e) {
-                                                                            if (e == null ) {
-                                                                                progressDialog.dismiss();
-                                                                                if(ParseUser.getCurrentUser() != null) {
-                                                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
-                                                                                    intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
-                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                                                    startActivity(intent);
-                                                                                }
-
-                                                                            } else {
-                                                                                progressDialog.dismiss();
-                                                                            }
-                                                                        }
-                                                                    });
-                                                        }
-                                                    });
-                                                    AlertDialog alert = builder.create();
-                                                    alert.show();
-                                                    return;
-                                                }
-                                                //
-                                                if (list.size() == 0) {
-                                                    progressDialog.dismiss();
-                                                    AlertDialog.Builder dialog = new AlertDialog.Builder
-                                                            (LoginActivity.this);
-
-                                                    dialog.setTitle(getString(R.string.errorThereAreNoStoreNear));
-                                                    dialog.setCancelable(false);
-                                                    dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int which) {
-                                                            ParseObject.unpinAllInBackground(DownloadUtils
-                                                                    .PIN_ATTENDANCE + "_DRAFT", new DeleteCallback() {
-                                                                @Override
-                                                                public void done(ParseException e) {
-                                                                    finish();
-                                                                }
-                                                            });
-
-                                                        }
-                                                    });
-                                                    dialog.show();
-                                                    return;
-                                                }
                                             } else {
-                                                Toast.makeText(LoginActivity.this, "1111." + e.getMessage(), Toast
-                                                        .LENGTH_SHORT).show();
                                                 progressDialog.dismiss();
                                             }
                                         }
-
-
                                     });
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "2222." + e.getMessage(), Toast.LENGTH_SHORT)
-                                            .show();
-                                    progressDialog.dismiss();
+                                    return;
                                 }
+                                //
+                                if (list.size() > 1) {
+                                    final CharSequence[] items = new CharSequence[list.size()];
+                                    final CharSequence[] items_id = new CharSequence[list.size()];
+                                    for (int i = 0; i < items.length; i++) {
+                                        items[i] = list.get(i).getName() + " - " + list.get(i).getAddress();
+                                        items_id[i] = list.get(i).getObjectId();
+                                    }
+
+                                    progressDialog.dismiss();
+
+                                    AlertDialog.Builder builder = new AlertDialog.Builder
+                                            (LoginActivity.this);
+                                    builder.setTitle(getString(R.string.pleaseSelectAtLeastOneStoreBelow));
+                                    builder.setItems(items, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int item) {
+                                            // Do something with the selection
+                                            String storeIdSelected = items_id[item].toString();
+                                            attendance.setStoreId(storeIdSelected);
+                                            employeeStoreId = storeIdSelected;
+                                            attendance.pinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT", new SaveCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    if (e == null) {
+                                                        progressDialog.dismiss();
+                                                        if (ParseUser.getCurrentUser() != null) {
+                                                            Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                                            intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                            startActivity(intent);
+                                                        }
+
+                                                    } else {
+                                                        progressDialog.dismiss();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                    AlertDialog alert = builder.create();
+                                    alert.show();
+                                    return;
+                                }
+                                //
+                                if (list.size() == 0) {
+                                    progressDialog.dismiss();
+                                    AlertDialog.Builder dialog = new AlertDialog.Builder
+                                            (LoginActivity.this);
+
+                                    dialog.setTitle(getString(R.string.errorThereAreNoStoreNear));
+                                    dialog.setCancelable(false);
+                                    dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            ParseObject.unpinAllInBackground(DownloadUtils
+                                                    .PIN_ATTENDANCE + "_DRAFT", new DeleteCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    finish();
+                                                }
+                                            });
+
+                                        }
+                                    });
+                                    dialog.show();
+                                }
+                            } else {
+                                Toast.makeText(LoginActivity.this, "1111." + e.getMessage(), Toast
+                                        .LENGTH_SHORT).show();
+                                progressDialog.dismiss();
                             }
-                        });
+                        }
+                    });
 
 
-                    } else {
-                        // can't get location
-                        // GPS or Network is not enabled
-                        // Ask user to enable GPS/network in settings
-                        gpsTracker.showSettingsAlert();
-                    }
-
+                } else {
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    finish();
+                    gpsTracker.showSettingsAlert();
                 }
+
+            }
 
         }
     }
