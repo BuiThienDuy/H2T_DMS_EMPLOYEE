@@ -1,7 +1,9 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.view_report;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,22 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.BarChartItem;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.ChartItem;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.PieChartItem;
+import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.LoginDialog;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.MyEditDatePicker;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.ProductPurchase;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.github.mikephil.charting.data.*;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
+import com.parse.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,6 +45,9 @@ import java.util.*;
 public class ViewReportActivity extends Activity {
     ListView lvChart;
     BootstrapEditText etFromDate,etToDate;
+    BootstrapEditText etName;
+    BootstrapEditText etPassword;
+    BootstrapButton btnDone,btnCancel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +56,93 @@ public class ViewReportActivity extends Activity {
         setTitle(getString(R.string.reportTitle));
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        InitializeComponent();
-        LoadReport();
-        SetupEvent();
+        if(ParseUser.getCurrentUser() == null) {
+            final Dialog login = new Dialog(this);
+            login.setContentView(R.layout.dialog_login);
+            login.setTitle(getString(R.string.loginTitle));
+            login.setCancelable(false);
+
+            etName = (BootstrapEditText) login.findViewById(R.id.dialog_login_et_tendangnhap);
+            etPassword = (BootstrapEditText) login.findViewById(R.id.dialog_login_et_matkhau);
+            btnDone = (BootstrapButton) login.findViewById(R.id.dialog_login_btn_dangnhap);
+            btnCancel = (BootstrapButton) login.findViewById(R.id.dialog_login_btn_huy);
+
+            btnDone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String username = etName.getText().toString();
+                    String password = etPassword.getText().toString();
+
+                    boolean error_exist = false;
+                    StringBuilder error_msg = new StringBuilder(getString(R.string.errorPrefix));
+
+                    // blank username
+                    if (username.trim().equals("")) {
+                        error_exist = true;
+                        error_msg.append(getString(R.string.errorUsername));
+                    }
+
+                    // blank password
+                    if (password.trim().equals("")) {
+                        if (error_exist) {
+                            error_msg.append(getString(R.string.errorJoin));
+                        }
+                        error_exist = true;
+                        error_msg.append(getString(R.string.errorPassword));
+                    }
+
+                    if (error_exist) {
+                        Toast.makeText(ViewReportActivity.this, error_msg.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!ConnectUtils.hasConnectToInternet(ViewReportActivity.this)) {
+                        Toast.makeText(ViewReportActivity.this, getString(R.string.needInternetAccessToLogin),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    } else {
+                        ParseUser.logInInBackground(username, password, new LogInCallback() {
+                            @Override
+                            public void done(ParseUser parseUser, ParseException e) {
+                                if (e == null) {
+                                    if (parseUser.get("role_name").toString().equals("NVKD")) {
+                                        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+                                        parseInstallation.put("username", parseUser.getUsername());
+                                        parseInstallation.put("userId", parseUser.getObjectId());
+                                        parseInstallation.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                login.dismiss();
+                                                InitializeComponent();
+                                                LoadReport();
+                                                SetupEvent();
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(ViewReportActivity.this, getString(R.string.errorSignIn), Toast
+                                                .LENGTH_LONG)
+                                                .show();
+                                    }
+                                } else {
+                                    Toast.makeText(ViewReportActivity.this, getString(R.string.userOrPasswordIncorrect), Toast
+                                            .LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+
+            login.show();
+        } else {
+            InitializeComponent();
+            LoadReport();
+            SetupEvent();
+        }
     }
 
     public void SetupEvent() {

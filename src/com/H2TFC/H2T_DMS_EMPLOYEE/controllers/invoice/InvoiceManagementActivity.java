@@ -1,6 +1,7 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,8 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.InvoiceAdapter;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.*;
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.parse.*;
 
 import java.text.SimpleDateFormat;
@@ -27,6 +30,9 @@ import java.util.Date;
 public class InvoiceManagementActivity extends Activity {
     public InvoiceAdapter invoiceAdapter;
     public ListView lvInvoice;
+    BootstrapEditText etName;
+    BootstrapEditText etPassword;
+    BootstrapButton btnDone,btnCancel;
 
     TextView tvEmptyInvoice;
 
@@ -37,6 +43,99 @@ public class InvoiceManagementActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.invoiceManagementTitle));
 
+        if(ParseUser.getCurrentUser() == null) {
+            final Dialog login = new Dialog(this);
+            login.setContentView(R.layout.dialog_login);
+            login.setTitle(getString(R.string.loginTitle));
+            login.setCancelable(false);
+
+            etName = (BootstrapEditText) login.findViewById(R.id.dialog_login_et_tendangnhap);
+            etPassword = (BootstrapEditText) login.findViewById(R.id.dialog_login_et_matkhau);
+            btnDone = (BootstrapButton) login.findViewById(R.id.dialog_login_btn_dangnhap);
+            btnCancel = (BootstrapButton) login.findViewById(R.id.dialog_login_btn_huy);
+
+            btnDone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String username = etName.getText().toString();
+                    String password = etPassword.getText().toString();
+
+                    boolean error_exist = false;
+                    StringBuilder error_msg = new StringBuilder(getString(R.string.errorPrefix));
+
+                    // blank username
+                    if (username.trim().equals("")) {
+                        error_exist = true;
+                        error_msg.append(getString(R.string.errorUsername));
+                    }
+
+                    // blank password
+                    if (password.trim().equals("")) {
+                        if (error_exist) {
+                            error_msg.append(getString(R.string.errorJoin));
+                        }
+                        error_exist = true;
+                        error_msg.append(getString(R.string.errorPassword));
+                    }
+
+                    if (error_exist) {
+                        Toast.makeText(InvoiceManagementActivity.this, error_msg.toString(), Toast.LENGTH_LONG).show();
+                    } else if (!ConnectUtils.hasConnectToInternet(InvoiceManagementActivity.this)) {
+                        Toast.makeText(InvoiceManagementActivity.this, getString(R.string.needInternetAccessToLogin),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    } else {
+                        ParseUser.logInInBackground(username, password, new LogInCallback() {
+                            @Override
+                            public void done(ParseUser parseUser, ParseException e) {
+                                if (e == null) {
+                                    if (parseUser.get("role_name").toString().equals("NVKD")) {
+                                        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+                                        parseInstallation.put("username", parseUser.getUsername());
+                                        parseInstallation.put("userId", parseUser.getObjectId());
+                                        parseInstallation.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                login.dismiss();
+                                                InitializeComponent();
+                                                SetUpListView();
+                                                SetupEvent();
+                                                DownloadUtils.DownloadParseInvoice(InvoiceManagementActivity.this, new SaveCallback() {
+                                                    @Override
+                                                    public void done(ParseException e) {
+                                                        tvEmptyInvoice.setVisibility(View.VISIBLE);
+                                                        invoiceAdapter.loadObjects();
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(InvoiceManagementActivity.this, getString(R.string.errorSignIn), Toast
+                                                .LENGTH_LONG)
+                                                .show();
+                                    }
+                                } else {
+                                    Toast.makeText(InvoiceManagementActivity.this, getString(R.string.userOrPasswordIncorrect), Toast
+                                            .LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+
+            login.show();
+        } else {
+            InitializeComponent();
+            SetUpListView();
+            SetupEvent();
             DownloadUtils.DownloadParseInvoice(InvoiceManagementActivity.this, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -44,12 +143,9 @@ public class InvoiceManagementActivity extends Activity {
                     invoiceAdapter.loadObjects();
                 }
             });
+        }
 
 
-        InitializeComponent();
-        SetUpListView();
-
-        SetupEvent();
     }
 
     private void SetupEvent() {

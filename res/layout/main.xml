@@ -5,14 +5,15 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             tools:context=".MainActivity">
-        <RelativeLayout
+        <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:paddingBottom="20dp"
                 >
                 <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         android:id="@+id/activity_main_iv_photo"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/companyName"
@@ -20,31 +21,51 @@
                         android:textColor="#FFFFFF"
                         android:textSize="50sp"
                         android:textStyle="bold"
-                        android:background="#4990CC"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"/>
+                        android:background="#4990CC"/>
+                <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/home"
+                        android:layout_gravity="center"/>
+                <LinearLayout
+                        android:id="@+id/main_ll_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center">
+                        <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="italic"
+                                android:text="@string/youCurrentlyLogin"/>
+                        <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
+                                android:id="@+id/main_tv_log_out"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/clickToLogout"
+                                android:textColor="@color/bbutton_info"/>
+                </LinearLayout>
+
+
                 <com.H2TFC.H2T_DMS_EMPLOYEE.widget.AutofitTextView
                         android:id="@+id/activity_main_tv_vuilong"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/pleaseChooseYourAction"
                         android:gravity="center"
+                        android:layout_marginTop="30dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:layout_marginTop="100dp"
                         android:singleLine="true"
-                        style="?android:textAppearanceLarge"
-                        android:layout_below="@+id/activity_main_iv_photo"/>
+                        style="?android:textAppearanceLarge"/>
                 <com.beardedhen.androidbootstrap.BootstrapButton
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/survey"
                         android:id="@+id/activity_main_btn_khaosat"
-                        android:layout_below="@+id/activity_main_tv_vuilong"
                         bootstrap:bb_type="primary"
                         bootstrap:bb_roundedCorners="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="50dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
                         android:textSize="20sp"
@@ -54,16 +75,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/visit"
                         android:id="@+id/activity_main_btn_viengtham"
-                        android:layout_below="@+id/activity_main_btn_khaosat"
                         bootstrap:bb_type="primary"
                         bootstrap:bb_roundedCorners="true"
-                        android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
                         android:textSize="20sp"
                         />
-        </RelativeLayout>
+        </LinearLayout>
 
 </ScrollView>
 

@@ -1,7 +1,9 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.visit_store_point;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -9,17 +11,23 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
+import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.PopupAdapter;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.StoreDetailActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Area;
+import com.H2TFC.H2T_DMS_EMPLOYEE.models.Attendance;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.GPSTracker;
+import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -28,6 +36,7 @@ import com.google.android.gms.maps.model.*;
 import com.google.maps.android.ui.IconGenerator;
 import com.parse.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,6 +61,8 @@ public class VisitStorePointActivity extends Activity {
         setContentView(R.layout.activity_visit_store_point);
         InitializeComponent();
         SetupMap();
+
+        SyncAttendanceToOnline();
 
         if(getIntent().hasExtra("EXTRAS_STORE_ID")) {
             currentStoreId = getIntent().getStringExtra("EXTRAS_STORE_ID");
@@ -88,6 +99,86 @@ public class VisitStorePointActivity extends Activity {
         });
     }
 
+    private void SyncAttendanceToOnline() {
+        // Sync Attendance to online
+        ParseQuery<Store> storeParseQuery = Store.getQuery();
+        storeParseQuery.whereEqualTo("objectId", currentStoreId);
+        storeParseQuery.fromPin(DownloadUtils.PIN_STORE);
+        storeParseQuery.getFirstInBackground(new GetCallback<Store>() {
+            @Override
+            public void done(Store store, ParseException e) {
+                if (e == null) {
+                    if (store.getEmployeeId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                        ParseQuery<Attendance> query = Attendance.getQuery();
+                        query.whereEqualTo("store_id", currentStoreId);
+                        query.whereEqualTo("photo_synched", false);
+                        query.fromPin(DownloadUtils.PIN_ATTENDANCE + "_DRAFT");
+                        query.findInBackground(new FindCallback<Attendance>() {
+                            @Override
+                            public void done(List<Attendance> listAttendance, ParseException e) {
+                                for (final Attendance attendance : listAttendance) {
+                                    attendance.setEmployeeId(ParseUser.getCurrentUser().getObjectId());
+                                    attendance.setManagerId(ParseUser.getCurrentUser().getString("manager_id"));
+                                    attendance.saveEventually(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            Bitmap photoOnSdCard = ImageUtils.getPhotoSaved(attendance.getPhotoTitle
+                                                    ());
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            photoOnSdCard.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                            byte[] bitmapdata = stream.toByteArray();
+
+                                            final ParseFile photo = new ParseFile("parse_photo.png", bitmapdata);
+                                            photo.saveInBackground(new SaveCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    if (e == null) {
+                                                        attendance.setPhoto(photo);
+                                                        attendance.setPhotoSynched(true);
+                                                        attendance.saveEventually();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                    attendance.unpinInBackground(DownloadUtils.PIN_ATTENDANCE + "_DRAFT");
+                                }
+                            }
+                        });
+                    } else {
+                        ParseQuery<Attendance> query = Attendance.getQuery();
+                        query.whereEqualTo("store_id", currentStoreId);
+                        query.whereEqualTo("photo_synched", false);
+                        query.fromPin(DownloadUtils.PIN_ATTENDANCE + "_DRAFT");
+
+                        AlertDialog.Builder dialog = new AlertDialog.Builder
+                                (VisitStorePointActivity.this);
+
+                        dialog.setTitle(getString(R.string.errorThereAreNoStoreNear));
+                        dialog.setCancelable(false);
+                        dialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ParseObject.unpinAllInBackground(DownloadUtils
+                                        .PIN_ATTENDANCE + "_DRAFT", new DeleteCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        Intent intent = new Intent(VisitStorePointActivity.this, MainActivity
+                                                .class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                    }
+                                });
+
+                            }
+                        });
+                        dialog.show();
+                    }
+                }
+            }
+        });
+    }
+
     public void DrawStorePoint() {
         // clear marker first
         for(Marker marker : myMapMarker.keySet()) {
@@ -102,20 +193,20 @@ public class VisitStorePointActivity extends Activity {
         storeParseQuery.findInBackground(new FindCallback<Store>() {
             @Override
             public void done(List<Store> list, ParseException e) {
-                if(e == null) {
-                    for(Store store : list) {
+                if (e == null) {
+                    for (Store store : list) {
                         MarkerOptions markerOptions = new MarkerOptions()
-                                                        .position(new LatLng(store.getLocationPoint().getLatitude(),store
-                                                                .getLocationPoint().getLongitude()))
-                                                        .title(store.getStoreType() + " " + store.getName())
-                                                        .snippet(store.getAddress() +
-                                                                "\n" + getString(R.string.descriptionStoreOwner) + store.getStoreOwner());
+                                .position(new LatLng(store.getLocationPoint().getLatitude(), store
+                                        .getLocationPoint().getLongitude()))
+                                .title(store.getStoreType() + " " + store.getName())
+                                .snippet(store.getAddress() +
+                                        "\n" + getString(R.string.descriptionStoreOwner) + store.getStoreOwner());
                         IconGenerator iconGenerator = new IconGenerator(VisitStorePointActivity.this);
                         iconGenerator.setColor(Store.getStatusColor(Store.StoreStatus.valueOf(store
                                 .getStatus())));
 
                         String displayName = store.getStoreType() + " " + store.getName();
-                        if(store.getObjectId().equals(currentStoreId)) {
+                        if (store.getObjectId().equals(currentStoreId)) {
                             iconGenerator.setColor(Color.YELLOW);
                             displayName += " - " + getString(R.string.visiting);
                         }
@@ -133,7 +224,20 @@ public class VisitStorePointActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                finish();
+                AlertDialog.Builder confirmDialog = new AlertDialog.Builder(VisitStorePointActivity.this);
+                confirmDialog.setMessage(getString(R.string.areYouSureYouWantToEndSession));
+                confirmDialog.setPositiveButton(getString(R.string.approve), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(VisitStorePointActivity.this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                });
+                confirmDialog.setNegativeButton(getString(R.string.cancel),null);
+
+                confirmDialog.show();
                 break;
             }
         }
@@ -191,5 +295,27 @@ public class VisitStorePointActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         DrawStorePoint();
+    }
+
+    boolean doubleBackToExitPressedOnce = false;
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.confirmOut), Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 3000);
     }
 }

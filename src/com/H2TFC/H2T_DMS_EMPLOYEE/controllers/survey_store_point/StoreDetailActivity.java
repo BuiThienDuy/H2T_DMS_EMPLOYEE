@@ -137,7 +137,6 @@ public class StoreDetailActivity extends Activity {
                         congNoHienTai[0] += invoice.getInvoicePrice();
                     }
 
-
                     ParseQuery<StoreType> storeTypeParseQuery = StoreType.getQuery();
                     storeTypeParseQuery.whereEqualTo("store_type_name", store.getStoreType());
                     storeTypeParseQuery.fromPin(DownloadUtils.PIN_STORE_TYPE);
@@ -165,8 +164,6 @@ public class StoreDetailActivity extends Activity {
                             }
                         }
                     });
-
-
                 }
             }
         });
@@ -174,6 +171,7 @@ public class StoreDetailActivity extends Activity {
 
     private void GetAndShowStoreDetail() {
         ParseQuery<StoreType> storeTypeParseQuery = StoreType.getQuery();
+        storeTypeParseQuery.whereNotEqualTo("locked",true);
         storeTypeParseQuery.fromPin(DownloadUtils.PIN_STORE_TYPE);
         try {
             List<StoreType> storeTypeList = storeTypeParseQuery.find();

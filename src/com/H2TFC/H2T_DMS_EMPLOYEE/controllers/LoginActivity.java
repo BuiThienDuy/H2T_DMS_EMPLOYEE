@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.SurveyStorePointActivity;
+import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.visit_store_point.VisitStorePointActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.visit_store_point.VisitStorePointDashboardActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Attendance;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
@@ -151,7 +152,7 @@ public class LoginActivity extends Activity {
                                     if (isKhaoSat) {
                                         intent = new Intent(LoginActivity.this, SurveyStorePointActivity.class);
                                     } else {
-                                        intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                        intent = new Intent(LoginActivity.this, VisitStorePointActivity.class);
                                         intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
                                     }
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -244,7 +245,7 @@ public class LoginActivity extends Activity {
                                             if (ex == null) {
                                                 progressDialog.dismiss();
                                                 if (ParseUser.getCurrentUser() != null) {
-                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                                    Intent intent = new Intent(LoginActivity.this, VisitStorePointActivity.class);
                                                     intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                                     startActivity(intent);
@@ -283,7 +284,7 @@ public class LoginActivity extends Activity {
                                                     if (e == null) {
                                                         progressDialog.dismiss();
                                                         if (ParseUser.getCurrentUser() != null) {
-                                                            Intent intent = new Intent(LoginActivity.this, VisitStorePointDashboardActivity.class);
+                                                            Intent intent = new Intent(LoginActivity.this, VisitStorePointActivity.class);
                                                             intent.putExtra("EXTRAS_STORE_ID", employeeStoreId);
                                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                                             startActivity(intent);
