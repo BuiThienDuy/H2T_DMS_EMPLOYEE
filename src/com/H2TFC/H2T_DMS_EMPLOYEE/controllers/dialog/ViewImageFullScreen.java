@@ -10,9 +10,10 @@ import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
-import com.parse.*;
-
-import java.util.List;
+import com.parse.DeleteCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 /**
  * Created by User on 02/03/2015.

@@ -1,7 +1,6 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.models;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 

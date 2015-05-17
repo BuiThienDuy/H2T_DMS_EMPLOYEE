@@ -1,31 +1,27 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.style.BulletSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceNewActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Promotion;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.widget.FlowLayout;
 import com.parse.*;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC

@@ -1,16 +1,11 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.SurveyStorePointActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.visit_store_point.VisitStorePointActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;

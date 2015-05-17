@@ -1,7 +1,6 @@
 package com.google.maps.android.clustering.algo;
 
 import android.support.v4.util.LruCache;
-
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 

@@ -1,15 +1,13 @@
 package com.mobisys.android.autocompletetextviewcomponent;
 
-import java.util.ArrayList;
-
+import android.util.Log;
+import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.AutoCompleteResponseParser;
+import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
-import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.AutoCompleteResponseParser;
-import com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView.DisplayStringInterface;
+import java.util.ArrayList;
 
 public class GoogleAutoCompleteParser implements AutoCompleteResponseParser{
 

@@ -6,15 +6,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog.ViewImageFullScreen;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.parse.*;
-
-import java.io.ByteArrayOutputStream;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC

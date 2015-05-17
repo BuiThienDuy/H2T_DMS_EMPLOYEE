@@ -2,12 +2,10 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.dialog;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.SurveyStorePointActivity;
 import com.parse.ParsePushBroadcastReceiver;
 import com.parse.ParseUser;
-import com.parse.PushService;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC

@@ -1,10 +1,7 @@
 package com.H2TFC.H2T_DMS_EMPLOYEE;
 
 import android.app.Application;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.SurveyStorePointActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.*;
-
 import com.parse.*;
 
 /*

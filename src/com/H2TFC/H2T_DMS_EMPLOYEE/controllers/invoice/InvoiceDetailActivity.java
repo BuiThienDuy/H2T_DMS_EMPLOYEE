@@ -2,7 +2,6 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,12 +13,10 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.models.Invoice;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Product;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.ProductPurchase;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
-import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.parse.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 

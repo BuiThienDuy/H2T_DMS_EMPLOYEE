@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.github.mikephil.charting.charts.BarChart;

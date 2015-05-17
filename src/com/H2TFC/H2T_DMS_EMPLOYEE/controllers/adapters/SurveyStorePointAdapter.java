@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Area;
-import com.parse.*;
+import com.parse.ParseQueryAdapter;
 
 /**
  * Created by c4sau on 27/03/2015.

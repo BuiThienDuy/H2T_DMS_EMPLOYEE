@@ -4,31 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.LoginActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.MainActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.invoice.InvoiceManagementActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.user_information_management.UserInformationManagementActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.view_report.ViewReportActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Attendance;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
-import com.H2TFC.H2T_DMS_EMPLOYEE.models.StoreImage;
-import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
-import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
-import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.google.maps.android.geometry.Point;
-import com.parse.*;
-
-import java.io.ByteArrayOutputStream;
-import java.util.List;
+import com.parse.ParseUser;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC

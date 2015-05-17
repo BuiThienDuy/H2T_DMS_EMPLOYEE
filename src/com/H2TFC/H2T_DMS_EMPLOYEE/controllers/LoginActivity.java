@@ -16,7 +16,6 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.survey_store_point.SurveyStorePointActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.visit_store_point.VisitStorePointActivity;
-import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.visit_store_point.VisitStorePointDashboardActivity;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Attendance;
 import com.H2TFC.H2T_DMS_EMPLOYEE.models.Store;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ConnectUtils;

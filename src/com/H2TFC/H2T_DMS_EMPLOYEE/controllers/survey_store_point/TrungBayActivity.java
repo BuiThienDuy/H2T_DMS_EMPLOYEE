@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.H2TFC.H2T_DMS_EMPLOYEE.MyApplication;
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 import com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters.TrungBayAdapter;
@@ -18,7 +20,6 @@ import com.H2TFC.H2T_DMS_EMPLOYEE.utils.DownloadUtils;
 import com.H2TFC.H2T_DMS_EMPLOYEE.utils.ImageUtils;
 import com.parse.*;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.UUID;
 

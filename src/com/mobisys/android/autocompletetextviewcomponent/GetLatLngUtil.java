@@ -1,14 +1,13 @@
 package com.mobisys.android.autocompletetextviewcomponent;
 
-import java.util.List;
-
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import com.google.android.maps.GeoPoint;
+
+import java.util.List;
 
 public class GetLatLngUtil {
 

@@ -2,7 +2,6 @@ package com.H2TFC.H2T_DMS_EMPLOYEE.controllers.adapters;
 
 import android.content.Context;
 import android.view.View;
-
 import com.github.mikephil.charting.data.ChartData;
 
 /**

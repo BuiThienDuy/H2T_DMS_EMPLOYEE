@@ -5,10 +5,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.*;
-import java.util.Random;
 
 /*
  * Copyright (C) 2015 H2TFC Team, LLC

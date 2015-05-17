@@ -19,7 +19,6 @@ package com.google.maps.android.ui;
 import android.content.res.Resources;
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
-
 import com.H2TFC.H2T_DMS_EMPLOYEE.R;
 
 /**
