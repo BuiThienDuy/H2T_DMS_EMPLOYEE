@@ -7,79 +7,54 @@
               android:layout_weight="1"
               android:background="#FFFFFF"
         >
-    <LinearLayout
+    <com.H2TFC.H2T_DMS_EMPLOYEE.widget.FlowLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="140dp"
-                android:background="#FFFFFF"
-                >
+            android:gravity="center_horizontal">
             <Button
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
                     android:drawableTop="@drawable/image_dashboard_streetdivide"
                     android:text="@string/storeCaring"
-                    android:layout_weight="1"
                     android:id="@+id/dashboard_btn_visit_store"
                     android:background="#FFFFFF"
                     style="?android:buttonBarButtonStyle"/>
             <Button
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
                     android:drawableTop="@drawable/image_viengtham_dashboard_invoice_management"
                     android:text="@string/trackInvoice"
-                    android:layout_weight="1"
                     android:id="@+id/activity_viengtham_dashboard_btn_invoice_management"
                     android:background="#FFFFFF"
                     style="?android:buttonBarButtonStyle"/>
-        </LinearLayout>
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="140dp"
-                android:background="#FFFFFF"
-                >
+
             <Button
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
                     android:drawableTop="@drawable/image_dashboard_user_information"
                     android:text="@string/userInformationManagement"
-                    android:layout_weight="1"
                     android:id="@+id/activity_viengtham_dashboard_btn_user_information"
                     android:background="#FFFFFF"
                     style="?android:buttonBarButtonStyle"/>
             <Button
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
                     android:drawableTop="@drawable/image_dashboard_view_report"
                     android:text="@string/viewReport"
-                    android:layout_weight="1"
                     android:id="@+id/dashboard_btn_view_report"
                     android:background="#FFFFFF"
                     style="?android:buttonBarButtonStyle"/>
-        </LinearLayout>
 
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="140dp"
-                android:background="#FFFFFF"
-                >
             <Button
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
                     android:drawableTop="@drawable/image_dashboard_log_out"
                     android:text="@string/logOut"
-                    android:layout_weight="1"
                     android:id="@+id/activity_viengtham_dashboard_btn_log_out"
                     android:background="#FFFFFF"
                     style="?android:buttonBarButtonStyle"/>
 
-        </LinearLayout>
-    </LinearLayout>
+    </com.H2TFC.H2T_DMS_EMPLOYEE.widget.FlowLayout>
 
 
 </ScrollView>
